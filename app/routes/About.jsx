@@ -1,0 +1,74 @@
+import "./subsite.css"
+export default function About() {
+  return (
+   <div id="about" className="subsite">
+     <div class="content">
+        <h1>About Sufferwell</h1>
+        <p>Discover our story and mission</p>
+      </div>
+
+      <div class="container">
+        <section>
+          <h2>Our Story</h2>
+          <p>
+            Sufferwell was founded with a simple yet powerful mission: to help
+            individuals overcome challenges and build resilience through
+            innovative solutions and community support.
+          </p>
+          <p>
+            We believe that personal growth often comes through facing
+            difficulties head-on, learning from experiences, and supporting one
+            another along the way.
+          </p>
+        </section>
+
+        <section>
+          <h2>Our Mission</h2>
+          <p>
+            To empower people to transform their struggles into strength,
+            providing tools, resources, and community to support mental and
+            emotional well-being.
+          </p>
+        </section>
+
+        <section>
+          <h2>Our Core Values</h2>
+          <div class="values">
+            <div class="value-card">
+              <h3>Resilience</h3>
+              <p>
+                Building strength through adversity and supporting personal
+                growth.
+              </p>
+            </div>
+            <div class="value-card">
+              <h3>Community</h3>
+              <p>
+                Creating inclusive spaces where everyone feels heard and
+                supported.
+              </p>
+            </div>
+            <div class="value-card">
+              <h3>Authenticity</h3>
+              <p>Fostering genuine connections and honest conversations.</p>
+            </div>
+            <div class="value-card">
+              <h3>Innovation</h3>
+              <p>Continuously improving our approach to meet evolving needs.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Get Involved</h2>
+          <p>
+            Join our community and be part of a movement dedicated to personal
+            transformation. Whether you're here to seek support, offer guidance,
+            or simply connect with others, there's a place for you at
+            Sufferwell.
+          </p>
+        </section>
+      </div>
+   </div>
+  );
+}

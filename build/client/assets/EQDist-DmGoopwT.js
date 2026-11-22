@@ -1,0 +1,1 @@
+import{o as e,t}from"./jsx-runtime-CckxRhsK.js";var n=t(),r=e(function(){return(0,n.jsx)(`div`,{children:(0,n.jsx)(`p`,{children:`© 2026 Sufferwell. All rights reserved.`})})});export{r as default};
