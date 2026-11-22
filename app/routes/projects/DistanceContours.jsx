@@ -12,6 +12,8 @@ export default function DistanceContoursRoute() {
     widthKm: 18,
     shiftStrikeFrac: 0,
     shiftDipFrac: 0,
+    weightStrike: 0,
+    weightDip: 0,
   });
 
   const setVal = (key) => (e) =>
@@ -26,42 +28,48 @@ export default function DistanceContoursRoute() {
     ["Dip (Einfallen)", "dipDeg", 5, 90, 1, `${params.dipDeg}°`],
     ["Länge L", "lengthKm", 5, 70, 1, `${params.lengthKm} km`],
     ["Breite W", "widthKm", 5, 40, 1, `${params.widthKm} km`],
-    ["Verschiebung Strike (−L/2 … +L/2)", "shiftStrikeFrac", -0.5, 0.5, 0.02, `${shiftLKm} km`],
-    ["Verschiebung Dip (−W/2 … +W/2)", "shiftDipFrac", -0.5, 0.5, 0.02, `${shiftWKm} km`],
+    ["Shift Strike", "shiftStrikeFrac", -0.5, 0.5, 0.02, `${shiftLKm} km`],
+    ["Shift Dip", "shiftDipFrac", -0.5, 0.5, 0.02, `${shiftWKm} km`],
+    ["Gewicht Vorne/Hinten", "weightStrike", -1, 1, 0.05, params.weightStrike.toFixed(2)],
+    ["Gewicht Oben/Unten", "weightDip", -1, 1, 0.05, params.weightDip.toFixed(2)],
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
-      <div className="mb-5 rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-md">
-        <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-          Distance Contours — Isolinien-Vergleich der 6 Distanzmaße
+    <div className="mx-auto max-w-[1440px] px-4 py-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 shadow-md">
+        <h1 className="text-lg font-extrabold tracking-tight text-white sm:text-xl">
+          Distance Contours — Isolinien-Vergleich (100 × 100 km)
         </h1>
-        <p className="mt-1.5 text-sm leading-relaxed text-slate-300">
-          Berechnung von R_epi, R_hyp, R_JB, R_rup, R_w und R_z auf einem festen 100 × 100 km Oberflächengitter (Rot = nah, Grün = fern).
-        </p>
+        <span className="text-xs text-slate-400">
+          Epi, Hypo, JB, Rupture, Ellipse, R_w & R_z auf einen Blick
+        </span>
       </div>
 
-      <div className="mb-5 grid grid-cols-1 gap-5 rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-md sm:grid-cols-2 lg:grid-cols-4">
-        {sliders.map(([label, key, min, max, step, displayVal]) => (
-          <label key={key} className="block text-sm font-medium text-slate-200">
-            <div className="mb-1.5 flex justify-between">
-              <span>{label}</span>
-              <strong className="font-bold text-sky-400">{displayVal}</strong>
-            </div>
-            <input
-              type="range"
-              min={min}
-              max={max}
-              step={step}
-              value={params[key]}
-              onChange={setVal(key)}
-              className="h-2 w-full cursor-pointer accent-sky-400"
-            />
-          </label>
-        ))}
-      </div>
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[260px_1fr]">
+        {/* Linke kompakte Steuerleiste */}
+        <aside className="space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-3.5 shadow-md">
+          {sliders.map(([label, key, min, max, step, displayVal]) => (
+            <label key={key} className="block text-xs font-medium text-slate-200">
+              <div className="mb-1 flex justify-between">
+                <span>{label}</span>
+                <strong className="font-bold text-sky-400">{displayVal}</strong>
+              </div>
+              <input
+                type="range"
+                min={min}
+                max={max}
+                step={step}
+                value={params[key]}
+                onChange={setVal(key)}
+                className="h-1.5 w-full cursor-pointer accent-sky-400"
+              />
+            </label>
+          ))}
+        </aside>
 
-      <DistanceContourGrid faultParams={params} />
+        {/* Rechts alle 7 Karten ohne Scrollen */}
+        <DistanceContourGrid faultParams={params} />
+      </div>
     </div>
   );
 }
