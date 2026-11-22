@@ -29,11 +29,6 @@ body {
   width: 100dvw;
 }
 
-#content {
-  height: 100%;
-}
-
-
 nav {
   background-color: #000;
   grid-row: span 5 / span 5;
