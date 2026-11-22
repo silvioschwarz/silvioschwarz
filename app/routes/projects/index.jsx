@@ -106,7 +106,7 @@ const PROJECTS = [
     slug: "/projects/eqdist",
     externalUrl: null,
     repoUrl: null,
-    status: "In Planung",
+    status: "Live",
     description:
       "Kommendes Visualisierungs- und Analyse-Tool für räumliche Verteilungen und Distanzmetriken seismischer Ereignisse.",
     tags: ["Geodaten", "Visualisierung", "Coming Soon"],
