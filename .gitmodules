@@ -1,3 +1,6 @@
 [submodule "app/external/alphabet-arcs"]
 	path = app/external/alphabet-arcs
 	url = https://github.com/silvioschwarz/Alphabet-Arcs.git
+[submodule "app/external/ground-motion"]
+	path = app/external/ground-motion
+	url = https://github.com/silvioschwarz/ground-motion.git
