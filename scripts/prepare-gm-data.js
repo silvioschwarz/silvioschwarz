@@ -33,16 +33,16 @@ function processRow(row, sourceFile) {
     toNum(row["V_pga"]),
   ].find(Number.isFinite);
 */
-    let pga;
+  let pga;
   if (isNga) {
     pga = toNum(row["PGA (g)"]);
   } else {
-    const rawPga = [toNum(row["rotD50_pga"]), toNum(row["U_pga"]), toNum(row["V_pga"])].find(Number.isFinite);
-    // Falls ESM-Wert positiv: cm/s^2 -> g; falls negativ: log10(cm/s^2) -> g
-    pga = Number.isFinite(rawPga)
-      ? (rawPga > 0 ? rawPga / 980.665 : Math.pow(10, rawPga) / 980.665)
-      : NaN;
+    const rawPga = [toNum(row["rotD50_pga"]), toNum(row["U_pga"]), toNum(row["V_pga"])].find(
+      (v) => Number.isFinite(v) && v > 0
+    );
+    pga = Number.isFinite(rawPga) ? rawPga / 980.665 : NaN;
   }
+
 
   const hypLat = toNum(
     row[isNga ? "Hypocenter Latitude (deg)" : "ev_latitude"],
