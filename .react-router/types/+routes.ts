@@ -29,6 +29,9 @@ type Pages = {
   "/projects/eqdist": {
     params: {};
   };
+  "/projects/distance-contours": {
+    params: {};
+  };
   "/projects/ground-motion": {
     params: {};
   };
@@ -42,11 +45,11 @@ type Pages = {
 type RouteFiles = {
   "root.jsx": {
     id: "root";
-    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/ground-motion" | "/projects/web-graphics/*";
+    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/distance-contours" | "/projects/ground-motion" | "/projects/web-graphics/*";
   };
   "layouts/AppLayout.jsx": {
     id: "layouts/AppLayout";
-    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/ground-motion" | "/projects/web-graphics/*";
+    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/distance-contours" | "/projects/ground-motion" | "/projects/web-graphics/*";
   };
   "routes/home.jsx": {
     id: "routes/home";
@@ -72,6 +75,10 @@ type RouteFiles = {
     id: "routes/projects/EQDist";
     page: "/projects/eqdist";
   };
+  "routes/projects/DistanceContours.jsx": {
+    id: "routes/projects/DistanceContours";
+    page: "/projects/distance-contours";
+  };
   "routes/projects/GroundMotion.jsx": {
     id: "routes/projects/GroundMotion";
     page: "/projects/ground-motion";
@@ -91,6 +98,7 @@ type RouteModules = {
   "routes/projects/index": typeof import("./app/routes/projects/index.jsx");
   "routes/projects/AlphabetArcs": typeof import("./app/routes/projects/AlphabetArcs.jsx");
   "routes/projects/EQDist": typeof import("./app/routes/projects/EQDist.jsx");
+  "routes/projects/DistanceContours": typeof import("./app/routes/projects/DistanceContours.jsx");
   "routes/projects/GroundMotion": typeof import("./app/routes/projects/GroundMotion.jsx");
   "routes/projects/WebGraphics": typeof import("./app/routes/projects/WebGraphics.jsx");
 };

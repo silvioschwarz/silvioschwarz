@@ -10,6 +10,7 @@ export default [
       index("routes/projects/index.jsx"), // Optional overview page at /projects
       route("alphabet-arcs", "routes/projects/AlphabetArcs.jsx"),
       route("eqdist", "routes/projects/EQDist.jsx"),
+      route("distance-contours", "routes/projects/DistanceContours.jsx"),
       route("ground-motion", "routes/projects/GroundMotion.jsx"),
       route("web-graphics/*", "routes/projects/WebGraphics.jsx"),
     ]),

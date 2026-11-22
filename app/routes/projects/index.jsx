@@ -8,23 +8,14 @@ const PROJECTS = [
     repoUrl: "https://github.com",
     status: "Live",
     description:
-      "Interaktive Analyse von über 44.000 Erdbeben-Messdaten (NGA-West2 & ESM) mit HTML5-Canvas-Scatterplot, Quadtree-Hover, Magnituden-Histogramm und PGA-Dichteverteilung.",
+      "Interaktive Analyse von über 44.300 Erdbeben-Messdaten (NGA-West2 & ESM) mit HTML5-Canvas-Scatterplot, Quadtree-Hover sowie den neu berechneten Metriken R_w und R_z.",
     tags: ["D3.js", "HTML5 Canvas", "Quadtree", "Seismologie"],
     preview: (
       <svg viewBox="0 0 320 140" className="h-full w-full bg-slate-900">
-        <defs>
-          <linearGradient id="gm-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#0f172a" />
-            <stop offset="100%" stopColor="#1e293b" />
-          </linearGradient>
-        </defs>
-        <rect width="320" height="140" fill="url(#gm-grad)" />
-        {/* Achsen */}
+        <rect width="320" height="140" fill="#0f172a" />
         <line x1="36" y1="115" x2="295" y2="115" stroke="#475569" strokeWidth="1.5" />
         <line x1="36" y1="20" x2="36" y2="115" stroke="#475569" strokeWidth="1.5" />
-        {/* Trendlinie */}
         <line x1="45" y1="35" x2="285" y2="105" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 3" />
-        {/* Datenpunkte */}
         {[
           [55, 42, "#38bdf8"], [68, 50, "#38bdf8"], [82, 46, "#fb7185"], [95, 58, "#38bdf8"],
           [110, 62, "#34d399"], [125, 55, "#fb7185"], [140, 70, "#38bdf8"], [152, 66, "#34d399"],
@@ -33,6 +24,48 @@ const PROJECTS = [
         ].map(([cx, cy, color], idx) => (
           <circle key={idx} cx={cx} cy={cy} r="3.5" fill={color} fillOpacity="0.85" />
         ))}
+      </svg>
+    ),
+  },
+  {
+    title: "EqDist — 3D Fault Distance Explorer",
+    slug: "/projects/eqdist",
+    externalUrl: null,
+    repoUrl: null,
+    status: "Live",
+    description:
+      "Interaktives 3D-Blockmodell (Three.js) zur Berechnung und Visualisierung von R_epi, R_hyp, R_JB, R_rup sowie der Eckpunkt-Mittelwerte R_w und R_z.",
+    tags: ["Three.js", "3D-Geometrie", "Finite Fault", "Seismologie"],
+    preview: (
+      <svg viewBox="0 0 320 140" className="h-full w-full bg-[#0b1120]">
+        <rect width="320" height="140" fill="#0b1120" />
+        <polygon points="70,45 190,35 230,65 110,75" fill="none" stroke="#facc15" strokeWidth="1.5" />
+        <polygon points="110,75 230,65 255,108 135,118" fill="rgba(249,115,22,0.45)" stroke="#fb923c" strokeWidth="1.5" />
+        <circle cx="170" cy="92" r="4.5" fill="#f43f5e" />
+        <polygon points="265,42 271,54 259,54" fill="#38bdf8" />
+        <line x1="265" y1="54" x2="215" y2="82" stroke="#f97316" strokeWidth="1.8" />
+        <line x1="265" y1="54" x2="170" y2="92" stroke="#f43f5e" strokeWidth="1.2" strokeDasharray="3 2" />
+      </svg>
+    ),
+  },
+  {
+    title: "Distance Contours — Isolinien-Vergleich",
+    slug: "/projects/distance-contours",
+    externalUrl: null,
+    repoUrl: null,
+    status: "Live",
+    description:
+      "Sechs synchronisierte Isolinien-Karten (100 × 100 km Gitter) zum direkten räumlichen Vergleich aller 6 Erdbeben-Distanzmaße inklusive Live-Fadenkreuz.",
+    tags: ["D3 Contours", "HTML5 Canvas", "Isolinien", "Seismologie"],
+    preview: (
+      <svg viewBox="0 0 320 140" className="h-full w-full bg-emerald-950">
+        <rect width="320" height="140" fill="#064e3b" />
+        <ellipse cx="160" cy="70" rx="135" ry="62" fill="#15803d" stroke="#0f172a" strokeWidth="1" />
+        <ellipse cx="160" cy="70" rx="102" ry="48" fill="#65a30d" stroke="#0f172a" strokeWidth="1" />
+        <ellipse cx="160" cy="70" rx="72" ry="35" fill="#eab308" stroke="#0f172a" strokeWidth="1" />
+        <ellipse cx="160" cy="70" rx="46" ry="23" fill="#ea580c" stroke="#0f172a" strokeWidth="1" />
+        <ellipse cx="160" cy="70" rx="24" ry="12" fill="#b91c1c" stroke="#0f172a" strokeWidth="1" />
+        <rect x="142" y="61" width="36" height="18" fill="rgba(250,204,21,0.2)" stroke="#facc15" strokeWidth="1.5" />
       </svg>
     ),
   },
@@ -47,21 +80,10 @@ const PROJECTS = [
     tags: ["Three.js", "WebGL", "3D-Animation", "OrbitControls"],
     preview: (
       <svg viewBox="0 0 320 140" className="h-full w-full bg-[#0a3c5c]">
-        <defs>
-          <radialGradient id="ocean-glow" cx="50%" cy="20%" r="80%">
-            <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#082f49" stopOpacity="1" />
-          </radialGradient>
-        </defs>
-        <rect width="320" height="140" fill="url(#ocean-glow)" />
-        {/* Spiralbahn */}
-        <ellipse cx="160" cy="82" rx="115" ry="26" fill="none" stroke="#7ae5ff" strokeOpacity="0.25" strokeWidth="1.5" />
-        <ellipse cx="160" cy="70" rx="80" ry="18" fill="none" stroke="#7ae5ff" strokeOpacity="0.35" strokeWidth="1.5" />
-        {/* Stilisierter Hai */}
-        <path
-          d="M115 68 Q155 48 205 66 L225 54 L218 68 L226 80 L205 70 Q155 82 115 68 Z"
-          fill="#cbd5e1"
-        />
+        <rect width="320" height="140" fill="#082f49" />
+        <ellipse cx="160" cy="82" rx="115" ry="26" fill="none" stroke="#7ae5ff" strokeOpacity="0.3" strokeWidth="1.5" />
+        <ellipse cx="160" cy="70" rx="80" ry="18" fill="none" stroke="#7ae5ff" strokeOpacity="0.4" strokeWidth="1.5" />
+        <path d="M115 68 Q155 48 205 66 L225 54 L218 68 L226 80 L205 70 Q155 82 115 68 Z" fill="#cbd5e1" />
         <polygon points="158,57 166,38 176,58" fill="#94a3b8" />
       </svg>
     ),
@@ -101,36 +123,17 @@ const PROJECTS = [
       </svg>
     ),
   },
-  {
-    title: "EqDist",
-    slug: "/projects/eqdist",
-    externalUrl: null,
-    repoUrl: null,
-    status: "Live",
-    description:
-      "Kommendes Visualisierungs- und Analyse-Tool für räumliche Verteilungen und Distanzmetriken seismischer Ereignisse.",
-    tags: ["Geodaten", "Visualisierung", "Coming Soon"],
-    preview: (
-      <svg viewBox="0 0 320 140" className="h-full w-full bg-gray-100">
-        <rect width="320" height="140" fill="#f1f5f9" />
-        <circle cx="160" cy="70" r="18" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" />
-        <circle cx="160" cy="70" r="36" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" />
-        <circle cx="160" cy="70" r="54" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 4" />
-        <circle cx="160" cy="70" r="4" fill="#64748b" />
-      </svg>
-    ),
-  },
 ];
 
 export default function ProjectsIndex() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+      <div className="mb-6 rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-md">
+        <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
           Projects
         </h1>
-        <p className="mt-2 max-w-2xl text-base text-gray-600">
-          Interaktive Datenvisualisierungen, 3D-WebGL-Experimente und Tools – direkt im Browser ausführbar.
+        <p className="mt-1.5 max-w-2xl text-sm text-slate-300">
+          Interaktive Datenvisualisierungen, seismologische Berechnungsmodelle und 3D-WebGL-Szenen – direkt im Browser ausführbar.
         </p>
       </div>
 
@@ -138,40 +141,31 @@ export default function ProjectsIndex() {
         {PROJECTS.map((project) => (
           <article
             key={project.title}
-            className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+            className="group flex flex-col overflow-hidden rounded-xl border border-slate-800 bg-slate-900 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:border-sky-500/60"
           >
-            {/* Vorschau-Banner */}
             <Link to={project.slug} className="relative block h-40 w-full overflow-hidden">
               <div className="h-full w-full transition-transform duration-300 group-hover:scale-105">
                 {project.preview}
               </div>
-              <span
-                className={`absolute right-3 top-3 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm ${
-                  project.status === "Live"
-                    ? "bg-emerald-500/90 text-white"
-                    : "bg-gray-700/85 text-gray-100"
-                }`}
-              >
+              <span className="absolute right-3 top-3 rounded-full bg-emerald-500/90 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
                 {project.status}
               </span>
             </Link>
 
-            {/* Inhalt */}
             <div className="flex flex-1 flex-col justify-between p-5">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600">
+                <h2 className="text-xl font-bold text-white group-hover:text-sky-400">
                   <Link to={project.slug}>{project.title}</Link>
                 </h2>
-                <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                <p className="mt-2 text-sm leading-relaxed text-slate-300">
                   {project.description}
                 </p>
 
-                {/* Tags */}
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   {project.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700"
+                      className="rounded-md border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs font-medium text-slate-200"
                     >
                       {tag}
                     </span>
@@ -179,11 +173,10 @@ export default function ProjectsIndex() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="mt-6 flex items-center gap-3 border-t border-gray-100 pt-4">
+              <div className="mt-6 flex items-center gap-3 border-t border-slate-800 pt-4">
                 <Link
                   to={project.slug}
-                  className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                  className="inline-flex items-center justify-center rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-sky-400"
                 >
                   Projekt öffnen →
                 </Link>
@@ -193,7 +186,7 @@ export default function ProjectsIndex() {
                     href={project.repoUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                    className="inline-flex items-center justify-center rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
                   >
                     GitHub
                   </a>
@@ -204,7 +197,7 @@ export default function ProjectsIndex() {
                     href={project.externalUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="ml-auto text-xs font-medium text-gray-500 hover:text-gray-800"
+                    className="ml-auto text-xs font-medium text-slate-400 hover:text-sky-400"
                   >
                     Standalone ↗
                   </a>

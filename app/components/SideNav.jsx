@@ -82,7 +82,7 @@ export default function Sidebar({ mobileOpen, desktopOpen, onCloseMobile }) {
             </button>
           </div>
 
- {projectsOpen && (
+          {projectsOpen && (
             <div className="mt-1 space-y-1">
               <NavLink
                 to="/projects/alphabet-arcs"
@@ -104,6 +104,13 @@ export default function Sidebar({ mobileOpen, desktopOpen, onCloseMobile }) {
                 onClick={onCloseMobile}
               >
                 EqDist
+              </NavLink>
+              <NavLink
+                to="/projects/distance-contours"
+                className={subLinkClass}
+                onClick={onCloseMobile}
+              >
+                Distance Contours
               </NavLink>
 
               <div>
