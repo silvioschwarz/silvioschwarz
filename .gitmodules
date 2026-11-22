@@ -1,0 +1,3 @@
+[submodule "app/external/alphabet-arcs"]
+	path = app/external/alphabet-arcs
+	url = https://github.com/silvioschwarz/Alphabet-Arcs.git
