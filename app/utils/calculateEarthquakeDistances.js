@@ -18,18 +18,22 @@ export function calculateEarthquakeDistances({
 
   // 1. Echte Bruchflächendimensionen bevorzugen, sonst Wells & Coppersmith (1994)
   const lengthKm =
-    Number.isFinite(lengthKmOverride) && lengthKmOverride > 0
+    Number.isFinite(lengthKmOverride) &&
+    lengthKmOverride > 0 &&
+    lengthKmOverride <= 1000
       ? lengthKmOverride
       : Math.pow(10, -2.44 + 0.59 * mw);
 
   const widthKm =
-    Number.isFinite(widthKmOverride) && widthKmOverride > 0
+    Number.isFinite(widthKmOverride) &&
+    widthKmOverride > 0 &&
+    widthKmOverride <= 300
       ? widthKmOverride
       : Math.pow(10, -1.01 + 0.32 * mw);
 
   // 2. Station relativ zum Hypozentrum in lokales NED-System (North, East, Down in km)
   const stNorth = (stLat - hypLat) * 111.132;
-  const stEast = (stLon - hypLon) * 111.320 * Math.cos(hypLat * rad);
+  const stEast = (stLon - hypLon) * 111.32 * Math.cos(hypLat * rad);
 
   // 3. Orthogonale Einheitsvektoren (Right-Hand-Rule)
   const strike = strikeDeg * rad;
@@ -48,7 +52,11 @@ export function calculateEarthquakeDistances({
 
   let offsetD;
   let p0D;
-  if (Number.isFinite(zTorKmOverride) && zTorKmOverride >= 0) {
+  if (
+    Number.isFinite(zTorKmOverride) &&
+    zTorKmOverride >= 0 &&
+    zTorKmOverride <= 100
+  ) {
     p0D = zTorKmOverride;
     offsetD = (p0D - hypDepthKm) / sinDip;
   } else {
@@ -96,17 +104,27 @@ export function calculateEarthquakeDistances({
   const corners = [
     [p0N, p0E, p0D],
     [p0N + lengthKm * usN, p0E + lengthKm * usE, p0D],
-    [p0N + lengthKm * usN + widthKm * udN, p0E + lengthKm * usE + widthKm * udE, p0D + widthKm * udD],
+    [
+      p0N + lengthKm * usN + widthKm * udN,
+      p0E + lengthKm * usE + widthKm * udE,
+      p0D + widthKm * udD,
+    ],
     [p0N + widthKm * udN, p0E + widthKm * udE, p0D + widthKm * udD],
   ];
 
-  const rW = corners.reduce((s, [cn, ce]) => s + Math.hypot(stNorth - cn, stEast - ce), 0) / 4;
-  const rZ = corners.reduce((s, [cn, ce, cd]) => s + Math.hypot(stNorth - cn, stEast - ce, -cd), 0) / 4;
+  const rW =
+    corners.reduce(
+      (s, [cn, ce]) => s + Math.hypot(stNorth - cn, stEast - ce),
+      0,
+    ) / 4;
+  const rZ =
+    corners.reduce(
+      (s, [cn, ce, cd]) => s + Math.hypot(stNorth - cn, stEast - ce, -cd),
+      0,
+    ) / 4;
 
   return { rEpi, rHyp, rJB, rRup, rW, rZ };
 }
-
-
 
 /*
 const distances = calculateEarthquakeDistances({
