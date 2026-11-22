@@ -39,6 +39,47 @@ function ContourCard({ metric, gridValues, corners, epi, maxDist, hoverPos, onHo
       ctx.lineWidth = 1;
       ctx.stroke();
     }
+
+    // Kleine Kilometer-Zahlen auf alle 10er-Konturlinien schreiben
+    ctx.font = "bold 9px system-ui, -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    for (const c of contours) {
+      if (c.value <= 0 || c.value % 10 !== 0) continue;
+
+      // Punkt auf dem äußeren Ring wählen, der weit genug vom Rand weg liegt
+      let bestPt = null;
+      let bestScore = -Infinity;
+
+      for (const polygon of c.coordinates) {
+        const ring = polygon.at(0);
+        if (!ring || ring.length < 8) continue;
+
+        for (let i = 0; i < ring.length; i += 3) {
+          const pt = ring.at(i);
+          const px = pt.at(0) * scale;
+          const py = pt.at(1) * scale;
+          if (px < 18 || px > size - 18 || py < 14 || py > size - 14) continue;
+
+          // Bevorzuge Punkte rechts-unten entlang der Diagonalen für geordnete Beschriftung
+          const score = px + py;
+          if (score > bestScore) {
+            bestScore = score;
+            bestPt = { px, py };
+          }
+        }
+      }
+
+      if (bestPt) {
+        const label = String(c.value);
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "rgba(15, 23, 42, 0.85)";
+        ctx.strokeText(label, bestPt.px, bestPt.py);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(label, bestPt.px, bestPt.py);
+      }
+    }
   }, [gridValues, maxDist]);
 
   const toPct = (km) => ((km + EXTENT_KM) / (2 * EXTENT_KM)) * 100;
