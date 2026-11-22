@@ -127,7 +127,7 @@ const PROJECTS = [
 
 export default function ProjectsIndex() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="mx-auto w-full max-w-[1850px] px-4 py-6">
       <div className="mb-6 rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-md">
         <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
           Projects
@@ -143,7 +143,7 @@ export default function ProjectsIndex() {
             key={project.title}
             className="group flex flex-col overflow-hidden rounded-xl border border-slate-800 bg-slate-900 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:border-sky-500/60"
           >
-            <Link to={project.slug} className="relative block h-40 w-full overflow-hidden">
+            <Link to={project.slug} className="relative block h-52 w-full overflow-hidden">
               <div className="h-full w-full transition-transform duration-300 group-hover:scale-105">
                 {project.preview}
               </div>

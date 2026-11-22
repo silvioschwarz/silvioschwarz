@@ -35,7 +35,7 @@ export default function DistanceContoursRoute() {
   ];
 
   return (
-    <div className="mx-auto max-w-[1440px] px-4 py-4">
+    <div className="w-full max-w-[1850px] mx-auto px-4 py-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 shadow-md">
         <h1 className="text-lg font-extrabold tracking-tight text-white sm:text-xl">
           Distance Contours — Isolinien-Vergleich (100 × 100 km)
@@ -45,12 +45,12 @@ export default function DistanceContoursRoute() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[260px_1fr]">
-        {/* Linke kompakte Steuerleiste */}
-        <aside className="space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-3.5 shadow-md">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr]">
+        {/* Linke Steuerleiste über volle vertikale Höhe */}
+        <aside className="flex h-full flex-col justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-md">
           {sliders.map(([label, key, min, max, step, displayVal]) => (
             <label key={key} className="block text-xs font-medium text-slate-200">
-              <div className="mb-1 flex justify-between">
+              <div className="mb-1.5 flex justify-between">
                 <span>{label}</span>
                 <strong className="font-bold text-sky-400">{displayVal}</strong>
               </div>
@@ -61,13 +61,13 @@ export default function DistanceContoursRoute() {
                 step={step}
                 value={params[key]}
                 onChange={setVal(key)}
-                className="h-1.5 w-full cursor-pointer accent-sky-400"
+                className="h-2 w-full cursor-pointer accent-sky-400"
               />
             </label>
           ))}
         </aside>
 
-        {/* Rechts alle 7 Karten ohne Scrollen */}
+        {/* Rechts alle 7 Karten */}
         <DistanceContourGrid faultParams={params} />
       </div>
     </div>

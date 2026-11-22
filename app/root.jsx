@@ -3,7 +3,7 @@ import "./app.css";
 
 export function Layout({ children }) {
   return (
-    <html lang="en">
+    <html lang="de" className="dark">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,7 +11,7 @@ export function Layout({ children }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased">
         {children}
         <ScrollRestoration />
         <Scripts />

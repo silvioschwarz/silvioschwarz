@@ -19,20 +19,20 @@ export function computeDistances({
   dipDeg,
   lengthKm,
   widthKm,
-  shiftStrikeFrac = 0, // -0.5 bis +0.5 (entspricht -L/2 bis +L/2)
-  shiftDipFrac = 0,    // -0.5 bis +0.5 (entspricht -W/2 bis +W/2)
+  shiftStrikeFrac = 0, // -0.5 bis +0.5 (-L/2 bis +L/2)
+  shiftDipFrac = 0,    // -0.5 bis +0.5 (-W/2 bis +W/2)
+  weightStrike = 0,    // -1 (vorne) bis +1 (hinten)
+  weightDip = 0,       // -1 (oben) bis +1 (unten)
 }) {
   const rad = Math.PI / 180;
   const strike = strikeDeg * rad;
   const dip = dipDeg * rad;
 
-  // Hypozentrum im lokalen Ursprung (0, 0, hypDepthKm), Station relativ dazu in km
   const hyp = [0, 0, hypDepthKm];
-  const epi = [0, 0, 0];
+  const epi = Array.of(0, 0, 0);
   const [stNorth, stEast] = latLonToNED(stLat, stLon, 0, hypLat, hypLon);
   const S = [stNorth, stEast, 0];
 
-  // Orthogonale Einheitsvektoren im NED-System (North, East, Down)
   const usN = Math.cos(strike);
   const usE = Math.sin(strike);
 
@@ -40,22 +40,20 @@ export function computeDistances({
   const udE = Math.cos(strike) * Math.cos(dip);
   const udD = Math.sin(dip);
 
-  // Obere linke Ecke P0 relativ zum Hypozentrum:
-  // Begrenzung entlang Dip, damit die Oberkante (Z_TOR = p0D) niemals über die Erdoberfläche (0 km) ragt
   const sinDip = Math.max(Math.sin(dip), 1e-4);
-  const minShiftDipFrac = Math.max(-0.5, 0.5 - hypDepthKm / (widthKm * sinDip));
-  const clampedShiftDipFrac = clamp(shiftDipFrac, minShiftDipFrac, 0.5);
-
+  const minOffsetD = -hypDepthKm / sinDip;
+  const rawOffsetD = (-0.5 + shiftDipFrac) * widthKm;
+  const offsetD = Math.max(rawOffsetD, minOffsetD);
   const offsetS = (-0.5 + shiftStrikeFrac) * lengthKm;
-  const offsetD = (-0.5 + clampedShiftDipFrac) * widthKm;
 
   const p0N = offsetS * usN + offsetD * udN;
   const p0E = offsetS * usE + offsetD * udE;
   const p0D = Math.max(0, hypDepthKm + offsetD * udD);
-  // 1. R_rup (kürzester 3D-Abstand Station S -> geneigte Bruchfläche)
+
+  // 1. R_rup
   const vN = stNorth - p0N;
   const vE = stEast - p0E;
-  const vD = 0 - p0D;
+  const vD = -p0D;
 
   const projS = clamp(vN * usN + vE * usE, 0, lengthKm);
   const projD = clamp(vN * udN + vE * udE + vD * udD, 0, widthKm);
@@ -63,10 +61,9 @@ export function computeDistances({
   const cRupN = p0N + projS * usN + projD * udN;
   const cRupE = p0E + projS * usE + projD * udE;
   const cRupD = p0D + projD * udD;
+  const rRup = Math.hypot(stNorth - cRupN, stEast - cRupE, -cRupD);
 
-  const rRup = Math.hypot(stNorth - cRupN, stEast - cRupE, 0 - cRupD);
-
-  // 2. R_JB (kürzester 2D-Abstand Station S -> Oberflächenprojektion)
+  // 2. R_JB
   const wHoriz = widthKm * Math.cos(dip);
   const udHorizN = -Math.sin(strike);
   const udHorizE = Math.cos(strike);
@@ -76,14 +73,13 @@ export function computeDistances({
 
   const cJbN = p0N + projSH * usN + projDH * udHorizN;
   const cJbE = p0E + projSH * usE + projDH * udHorizE;
-
   const rJB = Math.hypot(stNorth - cJbN, stEast - cJbE);
 
   // 3. R_hyp & 4. R_epi
   const rHyp = Math.hypot(stNorth, stEast, hypDepthKm);
   const rEpi = Math.hypot(stNorth, stEast);
 
-  // 4 Eckpunkte der Bruchfläche
+  // 4 Eckpunkte: c0 (oben-vorne), c1 (oben-hinten), c2 (unten-hinten), c3 (unten-vorne)
   const c0 = [p0N, p0E, p0D];
   const c1 = [p0N + lengthKm * usN, p0E + lengthKm * usE, p0D];
   const c2 = [
@@ -94,11 +90,36 @@ export function computeDistances({
   const c3 = [p0N + widthKm * udN, p0E + widthKm * udE, p0D + widthKm * udD];
   const corners = [c0, c1, c2, c3];
 
-  const rCorners3D =
-    corners.reduce((sum, [cn, ce, cd]) => sum + Math.hypot(stNorth - cn, stEast - ce, 0 - cd), 0) / 4;
+  // Gewichtungsfaktoren (Summe = 1)
+  const ws = clamp(weightStrike, -1, 1);
+  const wd = clamp(weightDip, -1, 1);
+  const weights = [
+    ((1 - ws) * (1 - wd)) / 4,
+    ((1 + ws) * (1 - wd)) / 4,
+    ((1 + ws) * (1 + wd)) / 4,
+    ((1 - ws) * (1 + wd)) / 4,
+  ];
 
-  const rCorners2D =
-    corners.reduce((sum, [cn, ce]) => sum + Math.hypot(stNorth - cn, stEast - ce), 0) / 4;
+  const rCorners2D = corners.reduce(
+    (sum, [cn, ce], i) => sum + weights.at(i) * Math.hypot(stNorth - cn, stEast - ce),
+    0
+  );
+
+  const rCorners3D = corners.reduce(
+    (sum, [cn, ce, cd], i) => sum + weights.at(i) * Math.hypot(stNorth - cn, stEast - ce, -cd),
+    0
+  );
+
+  // 7. R_ellipse: Linienquelle an der Oberfläche (Endpunkte F1 vorne, F2 hinten)
+  const f1 = [(c0.at(0) + c3.at(0)) / 2, (c0.at(1) + c3.at(1)) / 2, 0];
+  const f2 = [(c1.at(0) + c2.at(0)) / 2, (c1.at(1) + c2.at(1)) / 2, 0];
+
+  const dF1 = Math.hypot(stNorth - f1.at(0), stEast - f1.at(1));
+  const dF2 = Math.hypot(stNorth - f2.at(0), stEast - f2.at(1));
+
+  const wFront = (1 - ws) / 2;
+  const wBack = (1 + ws) / 2;
+  const rEllipse = wFront * dF1 + wBack * dF2;
 
   return {
     rRup,
@@ -107,6 +128,9 @@ export function computeDistances({
     rEpi,
     rCorners3D,
     rCorners2D,
+    rEllipse,
+    lineFoci: [f1, f2],
+    cornerWeights: weights,
     stOffsetKm: { north: stNorth, east: stEast },
     S,
     cRup: [cRupN, cRupE, cRupD],
@@ -114,7 +138,5 @@ export function computeDistances({
     hyp,
     epi,
     corners,
-    clampedShiftDipFrac,
-    minShiftDipFrac,
   };
 }

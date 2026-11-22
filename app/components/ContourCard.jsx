@@ -11,7 +11,7 @@ export default function ContourCard({ metric, gridValues, corners, epi, lineFoci
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const size = 220;
+    const size = 400;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, size, size);
 
@@ -91,7 +91,7 @@ export default function ContourCard({ metric, gridValues, corners, epi, lineFoci
   };
 
   return (
-    <div className="flex flex-col items-center rounded-xl border border-slate-800 bg-slate-900 p-2.5 shadow-md">
+    <div className="flex flex-col items-center rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-md">
       <div className="mb-1.5 flex w-full items-baseline justify-between gap-1">
         <div className="truncate text-xs font-bold text-white" title={metric.sub}>
           {metric.title}
@@ -106,9 +106,9 @@ export default function ContourCard({ metric, gridValues, corners, epi, lineFoci
       <div
         onMouseMove={handleMouseMove}
         onMouseLeave={() => onHover(null)}
-        className="relative aspect-square w-full max-w-[215px] cursor-crosshair overflow-hidden rounded-lg border border-slate-700 bg-emerald-900"
+        className="relative aspect-square w-full  cursor-crosshair overflow-hidden rounded-lg border border-slate-700 bg-emerald-900"
       >
-        <canvas ref={canvasRef} width={220} height={220} className="h-full w-full" />
+        <canvas ref={canvasRef} width={400} height={400} className="h-full w-full" />
         <svg viewBox="0 0 100 100" className="pointer-events-none absolute inset-0 h-full w-full">
           <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(255,255,255,0.2)" strokeWidth="0.4" />
           <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255,255,255,0.2)" strokeWidth="0.4" />

@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="border-t bg-white px-6 py-4 text-sm text-gray-500">
+    <footer className="border-t border-slate-800 bg-slate-900 px-6 py-3 text-xs text-slate-400">
       <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
         <span>© {new Date().getFullYear()} Silvio Schwarz</span>
         <div className="flex gap-4">
@@ -8,7 +8,7 @@ export default function Footer() {
             href="https://github.com"
             target="_blank"
             rel="noreferrer"
-            className="hover:text-gray-900"
+            className="hover:text-sky-400"
           >
             GitHub
           </a>

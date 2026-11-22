@@ -34,7 +34,7 @@ export default function EQDistRoute() {
   const shiftWKm = (params.shiftDipFrac * params.widthKm).toFixed(1);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="mx-auto w-full max-w-[1850px] px-4 py-6">
       <div className="mb-5 rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-md">
         <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
           EqDist — 3D-Distanzberechnung zur Erdbeben-Bruchfläche
