@@ -6,7 +6,7 @@
   "scripts": {
     "prepare-data": "node scripts/prepare-gm-data.js",
     "dev": "react-router dev",
-    "build": "react-router build",
+    "build": "npm run prepare-data && react-router build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
