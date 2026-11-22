@@ -23,25 +23,30 @@ type Pages = {
   "/projects": {
     params: {};
   };
-  "/projects/ground-motion": {
+  "/projects/alphabet-arcs": {
     params: {};
   };
   "/projects/eqdist": {
     params: {};
   };
-  "/projects/alphabet-arcs": {
+  "/projects/ground-motion": {
     params: {};
+  };
+  "/projects/web-graphics/*": {
+    params: {
+      "*": string;
+    };
   };
 };
 
 type RouteFiles = {
   "root.jsx": {
     id: "root";
-    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/ground-motion" | "/projects/eqdist" | "/projects/alphabet-arcs";
+    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/ground-motion" | "/projects/web-graphics/*";
   };
   "layouts/AppLayout.jsx": {
     id: "layouts/AppLayout";
-    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/ground-motion" | "/projects/eqdist" | "/projects/alphabet-arcs";
+    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/ground-motion" | "/projects/web-graphics/*";
   };
   "routes/home.jsx": {
     id: "routes/home";
@@ -59,17 +64,21 @@ type RouteFiles = {
     id: "routes/projects/index";
     page: "/projects";
   };
-  "routes/projects/GroundMotion.jsx": {
-    id: "routes/projects/GroundMotion";
-    page: "/projects/ground-motion";
+  "routes/projects/AlphabetArcs.jsx": {
+    id: "routes/projects/AlphabetArcs";
+    page: "/projects/alphabet-arcs";
   };
   "routes/projects/EQDist.jsx": {
     id: "routes/projects/EQDist";
     page: "/projects/eqdist";
   };
-  "routes/projects/AlphabetArcs.jsx": {
-    id: "routes/projects/AlphabetArcs";
-    page: "/projects/alphabet-arcs";
+  "routes/projects/GroundMotion.jsx": {
+    id: "routes/projects/GroundMotion";
+    page: "/projects/ground-motion";
+  };
+  "routes/projects/WebGraphics.jsx": {
+    id: "routes/projects/WebGraphics";
+    page: "/projects/web-graphics/*";
   };
 };
 
@@ -80,7 +89,8 @@ type RouteModules = {
   "routes/LatentSpace": typeof import("./app/routes/LatentSpace.jsx");
   "routes/ConfoundingVariables": typeof import("./app/routes/ConfoundingVariables.jsx");
   "routes/projects/index": typeof import("./app/routes/projects/index.jsx");
-  "routes/projects/GroundMotion": typeof import("./app/routes/projects/GroundMotion.jsx");
-  "routes/projects/EQDist": typeof import("./app/routes/projects/EQDist.jsx");
   "routes/projects/AlphabetArcs": typeof import("./app/routes/projects/AlphabetArcs.jsx");
+  "routes/projects/EQDist": typeof import("./app/routes/projects/EQDist.jsx");
+  "routes/projects/GroundMotion": typeof import("./app/routes/projects/GroundMotion.jsx");
+  "routes/projects/WebGraphics": typeof import("./app/routes/projects/WebGraphics.jsx");
 };

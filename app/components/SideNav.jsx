@@ -82,7 +82,7 @@ export default function Sidebar({ mobileOpen, desktopOpen, onCloseMobile }) {
             </button>
           </div>
 
-          {projectsOpen && (
+ {projectsOpen && (
             <div className="mt-1 space-y-1">
               <NavLink
                 to="/projects/alphabet-arcs"
@@ -105,6 +105,33 @@ export default function Sidebar({ mobileOpen, desktopOpen, onCloseMobile }) {
               >
                 EqDist
               </NavLink>
+
+              <div>
+                <NavLink
+                  to="/projects/web-graphics"
+                  end
+                  className={subLinkClass}
+                  onClick={onCloseMobile}
+                >
+                  Web Graphics
+                </NavLink>
+                <div className="ml-4 mt-1 space-y-1">
+                  <NavLink
+                    to="/projects/web-graphics/shark"
+                    className={subLinkClass}
+                    onClick={onCloseMobile}
+                  >
+                    Shark
+                  </NavLink>
+                  <NavLink
+                    to="/projects/web-graphics/first-try"
+                    className={subLinkClass}
+                    onClick={onCloseMobile}
+                  >
+                    First Try
+                  </NavLink>
+                </div>
+              </div>
             </div>
           )}
         </div>

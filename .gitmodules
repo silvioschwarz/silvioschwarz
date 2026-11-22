@@ -4,3 +4,6 @@
 [submodule "app/external/ground-motion"]
 	path = app/external/ground-motion
 	url = https://github.com/silvioschwarz/ground-motion.git
+[submodule "app/external/web-graphics"]
+	path = app/external/web-graphics
+	url = https://github.com/silvioschwarz/web-graphics.git
