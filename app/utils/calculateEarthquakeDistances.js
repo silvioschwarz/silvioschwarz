@@ -13,31 +13,50 @@ export function calculateEarthquakeDistances({
   shiftStrikeFrac = 0,
   shiftDipFrac = 0,
 }) {
+  const isValidCoord =
+    hypLat >= -90 &&
+    hypLat <= 90 &&
+    stLat >= -90 &&
+    stLat <= 90 &&
+    hypLon >= -180 &&
+    hypLon <= 180 &&
+    stLon >= -180 &&
+    stLon <= 180 &&
+    !(hypLat === 0 && hypLon === 0) &&
+    !(stLat === 0 && stLon === 0) &&
+    hypDepthKm >= 0 &&
+    hypDepthKm <= 700 &&
+    mw > 0 &&
+    mw <= 10;
+
+  if (!isValidCoord) {
+    return { rEpi: NaN, rHyp: NaN, rJB: NaN, rRup: NaN, rW: NaN, rZ: NaN };
+  }
+
   const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
   const rad = Math.PI / 180;
 
+  const validStrike = strikeDeg >= 0 && strikeDeg <= 360 ? strikeDeg : 0;
+  const validDip = dipDeg > 0 && dipDeg <= 90 ? dipDeg : 90;
+
   // 1. Echte Bruchflächendimensionen bevorzugen, sonst Wells & Coppersmith (1994)
   const lengthKm =
-    Number.isFinite(lengthKmOverride) &&
-    lengthKmOverride > 0 &&
-    lengthKmOverride <= 1000
+    Number.isFinite(lengthKmOverride) && lengthKmOverride > 0 && lengthKmOverride <= 1000
       ? lengthKmOverride
       : Math.pow(10, -2.44 + 0.59 * mw);
 
   const widthKm =
-    Number.isFinite(widthKmOverride) &&
-    widthKmOverride > 0 &&
-    widthKmOverride <= 300
+    Number.isFinite(widthKmOverride) && widthKmOverride > 0 && widthKmOverride <= 300
       ? widthKmOverride
       : Math.pow(10, -1.01 + 0.32 * mw);
 
   // 2. Station relativ zum Hypozentrum in lokales NED-System (North, East, Down in km)
   const stNorth = (stLat - hypLat) * 111.132;
-  const stEast = (stLon - hypLon) * 111.32 * Math.cos(hypLat * rad);
+  const stEast = (stLon - hypLon) * 111.320 * Math.cos(hypLat * rad);
 
   // 3. Orthogonale Einheitsvektoren (Right-Hand-Rule)
-  const strike = strikeDeg * rad;
-  const dip = dipDeg * rad;
+  const strike = validStrike * rad;
+  const dip = validDip * rad;
 
   const usN = Math.cos(strike);
   const usE = Math.sin(strike);
@@ -46,17 +65,13 @@ export function calculateEarthquakeDistances({
   const udE = Math.cos(strike) * Math.cos(dip);
   const udD = Math.sin(dip);
 
-  // 4. Obere linke Ecke P0 (Z_TOR aus CSV bevorzugen, falls vorhanden)
+  // 4. Obere linke Ecke P0 (Z_TOR aus CSV bevorzugen, falls plausibel)
   const sinDip = Math.max(Math.sin(dip), 1e-4);
   const offsetS = (-0.5 + shiftStrikeFrac) * lengthKm;
 
   let offsetD;
   let p0D;
-  if (
-    Number.isFinite(zTorKmOverride) &&
-    zTorKmOverride >= 0 &&
-    zTorKmOverride <= 100
-  ) {
+  if (Number.isFinite(zTorKmOverride) && zTorKmOverride >= 0 && zTorKmOverride <= 100) {
     p0D = zTorKmOverride;
     offsetD = (p0D - hypDepthKm) / sinDip;
   } else {
@@ -104,37 +119,16 @@ export function calculateEarthquakeDistances({
   const corners = [
     [p0N, p0E, p0D],
     [p0N + lengthKm * usN, p0E + lengthKm * usE, p0D],
-    [
-      p0N + lengthKm * usN + widthKm * udN,
-      p0E + lengthKm * usE + widthKm * udE,
-      p0D + widthKm * udD,
-    ],
+    [p0N + lengthKm * usN + widthKm * udN, p0E + lengthKm * usE + widthKm * udE, p0D + widthKm * udD],
     [p0N + widthKm * udN, p0E + widthKm * udE, p0D + widthKm * udD],
   ];
 
-  const rW =
-    corners.reduce(
-      (s, [cn, ce]) => s + Math.hypot(stNorth - cn, stEast - ce),
-      0,
-    ) / 4;
-  const rZ =
-    corners.reduce(
-      (s, [cn, ce, cd]) => s + Math.hypot(stNorth - cn, stEast - ce, -cd),
-      0,
-    ) / 4;
+  const rW = corners.reduce((s, [cn, ce]) => s + Math.hypot(stNorth - cn, stEast - ce), 0) / 4;
+  const rZ = corners.reduce((s, [cn, ce, cd]) => s + Math.hypot(stNorth - cn, stEast - ce, -cd), 0) / 4;
+
+  if (rRup > 2000 || rW > 2000 || rZ > 2000) {
+    return { rEpi: NaN, rHyp: NaN, rJB: NaN, rRup: NaN, rW: NaN, rZ: NaN };
+  }
 
   return { rEpi, rHyp, rJB, rRup, rW, rZ };
 }
-
-/*
-const distances = calculateEarthquakeDistances({
-  hypLat: 35.7695,
-  hypLon: -117.5993,
-  hypDepthKm: 8.0,
-  stLat: 35.62,
-  stLon: -117.38,
-  strikeDeg: 322,
-  dipDeg: 81,
-  mw: 7.1,
-});
-*/
