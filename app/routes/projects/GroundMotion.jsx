@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+//import { useMemo } from "react";
 import * as d3 from "d3";
 import GroundMotionDashboard from "../../external/ground-motion/src/GroundMotionDashboard.jsx";
 import preloadedRecords from "../../data/ground-motion.json";
-import ngaWest2Csv from "../../external/ground-motion/data/nga-west2.csv?raw";
-import esmCsv from "../../external/ground-motion/data/esm.csv?raw";
+//import ngaWest2Csv from "../../external/ground-motion/data/nga-west2.csv?raw";
+//import esmCsv from "../../external/ground-motion/data/esm.csv?raw";
 
 function parseNum(val) {
   if (val === undefined || val === null || val === "") return NaN;
