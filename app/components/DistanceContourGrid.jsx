@@ -40,41 +40,47 @@ function ContourCard({ metric, gridValues, corners, epi, maxDist, hoverPos, onHo
       ctx.stroke();
     }
 
-    // Kleine Kilometer-Zahlen auf alle 10er-Konturlinien schreiben
-    ctx.font = "bold 9px system-ui, -apple-system, sans-serif";
+    // Kleine Kilometer-Zahlen auf alle 10er-Konturlinien schreiben (10, 20, 30, 40, 50, 60)
+    ctx.font = "bold 10px system-ui, -apple-system, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
     for (const c of contours) {
       if (c.value <= 0 || c.value % 10 !== 0) continue;
 
-      // Punkt auf dem äußeren Ring wählen, der weit genug vom Rand weg liegt
       let bestPt = null;
       let bestScore = -Infinity;
 
       for (const polygon of c.coordinates) {
-        const ring = polygon.at(0);
-        if (!ring || ring.length < 8) continue;
+        for (const ring of polygon) {
+          if (!ring || ring.length < 6) continue;
 
-        for (let i = 0; i < ring.length; i += 3) {
-          const pt = ring.at(i);
-          const px = pt.at(0) * scale;
-          const py = pt.at(1) * scale;
-          if (px < 18 || px > size - 18 || py < 14 || py > size - 14) continue;
+          for (let i = 0; i < ring.length; i++) {
+            const pt = ring.at(i);
+            const gx = pt.at(0);
+            const gy = pt.at(1);
 
-          // Bevorzuge Punkte rechts-unten entlang der Diagonalen für geordnete Beschriftung
-          const score = px + py;
-          if (score > bestScore) {
-            bestScore = score;
-            bestPt = { px, py };
+            // Äußeren Gitterrand ignorieren (sonst kleben alle Labels am Rand!)
+            if (gx <= 2 || gx >= GRID_N - 2 || gy <= 2 || gy >= GRID_N - 2) continue;
+
+            const px = gx * scale;
+            const py = gy * scale;
+            if (px < 16 || px > size - 16 || py < 14 || py > size - 14) continue;
+
+            // Bevorzuge Punkte rechts-oben entlang der Diagonalen (px groß, py klein)
+            const score = px - py;
+            if (score > bestScore) {
+              bestScore = score;
+              bestPt = { px, py };
+            }
           }
         }
       }
 
       if (bestPt) {
         const label = String(c.value);
-        ctx.lineWidth = 2.5;
-        ctx.strokeStyle = "rgba(15, 23, 42, 0.85)";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(15, 23, 42, 0.9)";
         ctx.strokeText(label, bestPt.px, bestPt.py);
         ctx.fillStyle = "#ffffff";
         ctx.fillText(label, bestPt.px, bestPt.py);
