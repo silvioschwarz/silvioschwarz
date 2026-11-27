@@ -1,0 +1,12 @@
+[submodule "app/external/alphabet-arcs"]
+	path = app/external/alphabet-arcs
+	url = https://github.com/silvioschwarz/Alphabet-Arcs.git
+[submodule "app/external/ground-motion"]
+	path = app/external/ground-motion
+	url = https://github.com/silvioschwarz/ground-motion.git
+[submodule "app/external/web-graphics"]
+	path = app/external/web-graphics
+	url = https://github.com/silvioschwarz/web-graphics.git
+[submodule "app/external/wochenplan"]
+	path = app/external/wochenplan
+	url = https://github.com/silvioschwarz/wochenplan.git

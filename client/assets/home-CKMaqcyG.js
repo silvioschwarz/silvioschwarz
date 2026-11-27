@@ -1,0 +1,1 @@
+import{B as e,J as t}from"./entry.client-DuKkztGt.js";var n=e(),r=t(function(){return(0,n.jsxs)(`div`,{children:[(0,n.jsx)(`h1`,{className:`text-2xl font-bold`,children:`Welcome`}),(0,n.jsx)(`p`,{className:`mt-2 text-gray-600`,children:`Sidebar layout is up and running.`})]})});export{r as default};
