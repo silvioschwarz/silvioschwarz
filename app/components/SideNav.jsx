@@ -92,12 +92,13 @@ export default function Sidebar({ mobileOpen, desktopOpen, onCloseMobile }) {
                 Alphabet Arcs
               </NavLink>
               <NavLink
-                to="/projects/ground-motion"
+                to="/projects/distance-contours"
                 className={subLinkClass}
                 onClick={onCloseMobile}
               >
-                Ground Motion
+                Distance Contours
               </NavLink>
+
               <NavLink
                 to="/projects/eqdist"
                 className={subLinkClass}
@@ -105,12 +106,21 @@ export default function Sidebar({ mobileOpen, desktopOpen, onCloseMobile }) {
               >
                 EqDist
               </NavLink>
+
               <NavLink
-                to="/projects/distance-contours"
+                to="/projects/ground-motion"
                 className={subLinkClass}
                 onClick={onCloseMobile}
               >
-                Distance Contours
+                Ground Motion
+              </NavLink>
+
+                            <NavLink
+                to="/projects/wochenplan"
+                className={subLinkClass}
+                onClick={onCloseMobile}
+              >
+                Wochenplaner
               </NavLink>
 
               <div>

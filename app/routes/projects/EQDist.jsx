@@ -34,18 +34,9 @@ export default function EQDistRoute() {
   const shiftWKm = (params.shiftDipFrac * params.widthKm).toFixed(1);
 
   return (
-    <div className="mx-auto w-full max-w-[1850px] px-4 py-6">
-      <div className="mb-5 rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-md">
-        <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-          EqDist — 3D-Distanzberechnung zur Erdbeben-Bruchfläche
-        </h1>
-        <p className="mt-1.5 text-sm leading-relaxed text-slate-300">
-          Gib Koordinaten von Hypozentrum & Station ein und verschiebe die Bruchfläche relativ zum Herd (−L/2 bis +L/2 bzw. −W/2 bis +W/2).
-        </p>
-      </div>
-
-      {/* 6 Distanzkarten */}
-      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="mx-auto w-full h-full max-w-[1850px] px-4 py-4">
+               {/* 6 Distanzkarten */}
+      <div className="mb-5 grid grid-cols-1 col-span-4 gap-3 sm:grid-cols-1 lg:grid-cols-6">
         {cards.map((item) => (
           <div key={item.short} className={`rounded-xl border-l-4 ${item.border} bg-slate-900 p-4 shadow-md`}>
             <div className={`text-sm font-bold ${item.accent}`}>{item.short}</div>
@@ -56,14 +47,16 @@ export default function EQDistRoute() {
           </div>
         ))}
       </div>
-
-      {/* Koordinaten-Eingabefelder */}
-      <div className="mb-5 grid grid-cols-1 gap-4 rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-md md:grid-cols-2">
-        <div>
+          {/*GRID*/}
+      <div className="mb-5 grid grid-cols-4 grid-rows-1 gap-4 
+      rounded-xl border border-slate-800 bg-slate-900 p-5 
+      shadow-md md:grid-cols-4 max-h-[80dvh]">
+          {/* Koordinaten-Eingabefelder */}
+        <div className="grid-cols-1">
           <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-rose-400">
             Erdbeben (Hypozentrum)
           </h2>
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 gap-2.5">
             {[
               ["Breite (Lat °)", "hypLat", 0.001],
               ["Länge (Lon °)", "hypLon", 0.001],
@@ -76,18 +69,17 @@ export default function EQDistRoute() {
                   step={step}
                   value={params[key]}
                   onChange={setVal(key)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-sm font-semibold text-white focus:border-sky-500 focus:outline-none"
+                  className="rounded-lg border border-slate-700 bg-slate-950 
+                  px-2.5 py-1.5 text-sm font-semibold text-white focus:border-sky-500 
+                  focus:outline-none"
                 />
               </label>
             ))}
-          </div>
-        </div>
-
-        <div>
+            <div>
           <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-sky-400">
             Messstation (relativ: {metrics.stOffsetKm.north.toFixed(1)} km N, {metrics.stOffsetKm.east.toFixed(1)} km E)
           </h2>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 gap-2.5">
             {[
               ["Station Lat (°)", "stLat", 0.001],
               ["Station Lon (°)", "stLon", 0.001],
@@ -99,19 +91,19 @@ export default function EQDistRoute() {
                   step={step}
                   value={params[key]}
                   onChange={setVal(key)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-sm font-semibold text-white focus:border-sky-500 focus:outline-none"
+                  className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-sm font-semibold text-white focus:border-sky-500 focus:outline-none"
                 />
               </label>
             ))}
           </div>
+          </div>          
         </div>
-      </div>
-
-      {/* 3D Canvas */}
-      <FaultScene3D metrics={metrics} />
-
-      {/* Geometrie- & Verschiebungs-Slider */}
-      <div className="grid grid-cols-1 gap-5 rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-md sm:grid-cols-2 lg:grid-cols-3">
+        {/* Geometrie- & Verschiebungs-Slider */}
+      <div className="
+      grid grid-cols-1 gap-5 rounded-xl 
+      border border-slate-800 bg-slate-900 p-5 
+      shadow-md sm:grid-cols-2 lg:grid-cols-1
+      ">
         {[
           ["Strike (Streichen)", "strikeDeg", 0, 360, 1, `${params.strikeDeg}°`],
           ["Dip (Einfallen)", "dipDeg", 5, 90, 1, `${params.dipDeg}°`],
@@ -132,11 +124,31 @@ export default function EQDistRoute() {
               step={step}
               value={params[key]}
               onChange={setVal(key)}
-              className="h-2 w-full cursor-pointer accent-sky-400"
+              className="max-h-[10dvh] w-full cursor-pointer accent-sky-400"
             />
           </label>
         ))}
       </div>
+
+
+        
+
+        </div>
+        <div className="col-span-3">
+                            {/* 3D Canvas */}
+           <FaultScene3D metrics={metrics}/>
+               
+
+        </div>
+
+
+     
+      </div>
+
+
+      
+
+      
     </div>
   );
 }

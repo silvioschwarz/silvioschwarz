@@ -40,16 +40,21 @@ type Pages = {
       "*": string;
     };
   };
+  "/projects/wochenplan/*": {
+    params: {
+      "*": string;
+    };
+  };
 };
 
 type RouteFiles = {
   "root.jsx": {
     id: "root";
-    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/distance-contours" | "/projects/ground-motion" | "/projects/web-graphics/*";
+    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/distance-contours" | "/projects/ground-motion" | "/projects/web-graphics/*" | "/projects/wochenplan/*";
   };
   "layouts/AppLayout.jsx": {
     id: "layouts/AppLayout";
-    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/distance-contours" | "/projects/ground-motion" | "/projects/web-graphics/*";
+    page: "/" | "/latentspace" | "/confounding-variables" | "/projects" | "/projects/alphabet-arcs" | "/projects/eqdist" | "/projects/distance-contours" | "/projects/ground-motion" | "/projects/web-graphics/*" | "/projects/wochenplan/*";
   };
   "routes/home.jsx": {
     id: "routes/home";
@@ -87,6 +92,10 @@ type RouteFiles = {
     id: "routes/projects/WebGraphics";
     page: "/projects/web-graphics/*";
   };
+  "routes/projects/Wochenplan.jsx": {
+    id: "routes/projects/Wochenplan";
+    page: "/projects/wochenplan/*";
+  };
 };
 
 type RouteModules = {
@@ -101,4 +110,5 @@ type RouteModules = {
   "routes/projects/DistanceContours": typeof import("./app/routes/projects/DistanceContours.jsx");
   "routes/projects/GroundMotion": typeof import("./app/routes/projects/GroundMotion.jsx");
   "routes/projects/WebGraphics": typeof import("./app/routes/projects/WebGraphics.jsx");
+  "routes/projects/Wochenplan": typeof import("./app/routes/projects/Wochenplan.jsx");
 };

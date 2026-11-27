@@ -13,6 +13,7 @@ export default [
       route("distance-contours", "routes/projects/DistanceContours.jsx"),
       route("ground-motion", "routes/projects/GroundMotion.jsx"),
       route("web-graphics/*", "routes/projects/WebGraphics.jsx"),
+      route("wochenplan/*", "routes/projects/Wochenplan.jsx"),
     ]),
   ]),
 ];

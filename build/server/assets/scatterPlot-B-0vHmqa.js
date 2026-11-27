@@ -87,13 +87,13 @@ App.ScatterPlot = {
 			var validY = !isNaN(d.yVal) && (isLogY ? d.yVal > 0 : d.yVal >= 0);
 			return validX && validY;
 		});
-		if (isLogX) this.x = d3.scaleLog().domain([.1, 2e3]).range([0, cfg.width]);
-		else {
-			var maxX = d3.max(plotData, function(d) {
-				return d.xVal;
-			}) || 500;
-			this.x = d3.scaleLinear().domain([0, maxX * 1.05]).nice().range([0, cfg.width]);
-		}
+		var maxX = d3.max(plotData, function(d) {
+			return d.xVal;
+		}) || 2e3;
+		if (isLogX) {
+			var upperLogX = Math.max(2e3, Math.pow(10, Math.ceil(Math.log10(maxX))));
+			this.x = d3.scaleLog().domain([.1, upperLogX]).range([0, cfg.width]);
+		} else this.x = d3.scaleLinear().domain([0, maxX * 1.05]).nice().range([0, cfg.width]);
 		var yExtent = d3.extent(plotData, function(d) {
 			return d.yVal;
 		});

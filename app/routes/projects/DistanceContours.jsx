@@ -36,14 +36,6 @@ export default function DistanceContoursRoute() {
 
   return (
     <div className="w-full max-w-[1850px] mx-auto px-4 py-4">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 shadow-md">
-        <h1 className="text-lg font-extrabold tracking-tight text-white sm:text-xl">
-          Distance Contours — Isolinien-Vergleich (100 × 100 km)
-        </h1>
-        <span className="text-xs text-slate-400">
-          Epi, Hypo, JB, Rupture, Ellipse, R_w & R_z auf einen Blick
-        </span>
-      </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr]">
         {/* Linke Steuerleiste über volle vertikale Höhe */}

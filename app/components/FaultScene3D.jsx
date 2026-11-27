@@ -152,7 +152,7 @@ export default function FaultScene3D({ metrics }) {
   }, [metrics]);
 
   return (
-    <div className="relative mb-5 h-[620px] w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0b1120] shadow-xl">
+    <div className="relative mb-5 h-[65dvh] w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0b1120] shadow-xl">
       <div className="pointer-events-none absolute left-4 top-4 z-10 space-y-1.5 rounded-lg border border-slate-700 bg-slate-950/90 px-3.5 py-2.5 text-xs font-medium text-white shadow">
         <div><span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-sky-400" />Messstation (Oberfläche)</div>
         <div><span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-orange-500" />Bruchfläche (Fault Plane)</div>
