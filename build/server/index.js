@@ -3673,21 +3673,21 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/Wochenplan-DfrgCQfD.js",
+			"module": "/assets/Wochenplan-Dy6ust-L.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
 				"/assets/entry.client-DuKkztGt.js",
 				"/assets/pdf-vendor-ivIhnjD-.js"
 			],
-			"css": ["/assets/Wochenplan-o_HwwdSM.css"],
+			"css": ["/assets/Wochenplan-E4IejQae.css"],
 			"clientActionModule": void 0,
 			"clientLoaderModule": void 0,
 			"clientMiddlewareModule": void 0,
 			"hydrateFallbackModule": void 0
 		}
 	},
-	"url": "/assets/manifest-102ee0da.js",
-	"version": "102ee0da",
+	"url": "/assets/manifest-df52fec0.js",
+	"version": "df52fec0",
 	"sri": void 0
 };
 // \0virtual:react-router/server-build
