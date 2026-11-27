@@ -7,3 +7,6 @@
 [submodule "app/external/web-graphics"]
 	path = app/external/web-graphics
 	url = https://github.com/silvioschwarz/web-graphics.git
+[submodule "app/external/wochenplan"]
+	path = app/external/wochenplan
+	url = https://github.com/silvioschwarz/wochenplan.git
