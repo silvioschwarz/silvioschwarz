@@ -38,10 +38,20 @@ jobs:
       - name: Prepare data & build static site
         run: npm run build
 
+      # Prüft automatisch, ob der Build in "build/client" oder "dist" liegt
+      - name: Prepare artifact
+        run: |
+          if [ -d "build/client" ]; then
+            tar -cvf artifact.tar -C build/client .
+          else
+            tar -cvf artifact.tar -C dist .
+          fi
+
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
-          path: build/client
+          name: github-pages
+          path: artifact.tar
 
       - name: Deploy to GitHub Pages
         id: deployment
