@@ -3711,7 +3711,8 @@ var prerender = [
 	"/projects/ground-motion",
 	"/projects/web-graphics",
 	"/projects/web-graphics/first-try",
-	"/projects/web-graphics/shark"
+	"/projects/web-graphics/shark",
+	"/projects/wochenplan"
 ];
 var routeDiscovery = { "mode": "initial" };
 var publicPath = "/";
