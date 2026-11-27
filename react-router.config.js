@@ -10,6 +10,7 @@ export default {
     "/projects/web-graphics",
     "/projects/web-graphics/first-try",
     "/projects/web-graphics/shark",
+    "/projects/wochenplan",
   ],
   basename: "/",
 };

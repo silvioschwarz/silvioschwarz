@@ -38,20 +38,10 @@ jobs:
       - name: Prepare data & build static site
         run: npm run build
 
-      # Prüft, wo der Build liegt, und kopiert ihn bei Bedarf nach ./dist
-      - name: Prepare Pages directory
-        run: |
-          if [ -d "build/client" ]; then
-            rm -rf dist
-            cp -rL build/client dist
-          fi
-          ls -la dist
-
       - name: Upload Pages artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          name: github-pages
-          path: dist/
+          path: build
 
       - name: Deploy to GitHub Pages
         id: deployment
