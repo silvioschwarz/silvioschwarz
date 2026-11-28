@@ -3,16 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "prepare-data": "node scripts/prepare-gm-data.js",
-    "dev": "react-router dev",
-    "build": "npm run prepare-data && react-router build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
-
-  },
+"scripts": {
+  "prepare-data": "node scripts/prepare-gm-data.js",
+  "dev": "react-router dev",
+  "build": "npm run prepare-data && react-router build",
+  "lint": "eslint .",
+  "preview": "vite preview"
+},
   "dependencies": {
     "d3": "^7.9.2",
     "html-to-image": "^1.11.13",

@@ -1,3 +1,4 @@
+import type { Config } from "@react-router/dev/config";
 export default {
   ssr: false,
   buildDirectory: "dist", // Schreibt den Build sauber in dist/client
@@ -14,4 +15,4 @@ export default {
     "/projects/wochenplan",
   ],
   basename: "/",
-};
+} satisfies Config;
