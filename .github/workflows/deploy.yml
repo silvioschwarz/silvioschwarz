@@ -35,13 +35,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Prepare data & build static site
+      - name: Build static site
         run: npm run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: build/client
+          path: dist/client
 
       - name: Deploy to GitHub Pages
         id: deployment

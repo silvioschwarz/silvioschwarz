@@ -1,5 +1,6 @@
 export default {
   ssr: false,
+  buildDirectory: "dist", // Schreibt den Build sauber in dist/client
   prerender: [
     "/",
     "/latentspace",
