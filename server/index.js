@@ -3396,13 +3396,13 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/root-D6PUQiNn.js",
+			"module": "/assets/root-kbNiwOGx.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
 				"/assets/pdf-vendor-ivIhnjD-.js",
 				"/assets/entry.client-DuKkztGt.js"
 			],
-			"css": ["/assets/root-DzghSMfm.css"],
+			"css": ["/assets/root-DjLeHIvO.css"],
 			"clientActionModule": void 0,
 			"clientLoaderModule": void 0,
 			"clientMiddlewareModule": void 0,
@@ -3686,12 +3686,12 @@ var server_manifest_default = {
 			"hydrateFallbackModule": void 0
 		}
 	},
-	"url": "/assets/manifest-df52fec0.js",
-	"version": "df52fec0",
+	"url": "/assets/manifest-218eff05.js",
+	"version": "218eff05",
 	"sri": void 0
 };
 // \0virtual:react-router/server-build
-var assetsBuildDirectory = "build/client";
+var assetsBuildDirectory = "dist/client";
 var basename = "/";
 var future = {
 	"unstable_customRouteDiscovery": false,
