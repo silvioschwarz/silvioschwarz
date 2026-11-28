@@ -1,5 +1,5 @@
 // app/external/ground-motion/js/utils.js
-window.App = window.App || {};
+var App = window.App || {};
 App.Utils = {
 	parseNum: function(val) {
 		if (val === void 0 || val === null) return NaN;

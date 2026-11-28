@@ -1,0 +1,1 @@
+import{q as e,z as t}from"./entry.client-D0aGo1_L.js";var n=t(),r=e(function(){return(0,n.jsxs)(`div`,{children:[(0,n.jsx)(`h1`,{className:`text-2xl font-bold`,children:`Welcome`}),(0,n.jsx)(`p`,{className:`mt-2 text-gray-600`,children:`Sidebar layout is up and running.`})]})});export{r as default};

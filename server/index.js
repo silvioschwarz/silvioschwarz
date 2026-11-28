@@ -1018,8 +1018,8 @@ var MEANINGS = {
 		text: "Die Neun symbolisiert Großzügigkeit, Mitgefühl und den Blick über die eigenen Interessen hinaus."
 	}
 };
-function normalizeName(name) {
-	return name.toUpperCase().replace(/Ä/g, "AE").replace(/Ö/g, "OE").replace(/Ü/g, "UE").replace(/ẞ/g, "SS").replace(/ß/g, "SS");
+function normalizeName(name = "") {
+	return String(name).toUpperCase().replace(/Ä/g, "AE").replace(/Ö/g, "OE").replace(/Ü/g, "UE").replace(/ẞ/g, "SS").replace(/ß/g, "SS");
 }
 function getLetters(name) {
 	return normalizeName(name).replace(/[^A-Z]/g, "");
@@ -1045,6 +1045,7 @@ function getDigitalRoot(number) {
 function getPrimeFactors(number) {
 	const factors = [];
 	let n = number;
+	if (n < 2) return factors;
 	for (let divisor = 2; divisor * divisor <= n; divisor++) while (n % divisor === 0) {
 		factors.push(divisor);
 		n /= divisor;
@@ -1052,32 +1053,62 @@ function getPrimeFactors(number) {
 	if (n > 1) factors.push(n);
 	return factors;
 }
-function getScrabbleScore(rawName) {
+function getScrabbleScore(rawName = "") {
 	let score = 0;
-	for (const char of rawName.toUpperCase()) if (SCRABBLE_POINTS[char] !== void 0) score += SCRABBLE_POINTS[char];
+	for (const char of String(rawName).toUpperCase()) if (SCRABBLE_POINTS[char] !== void 0) score += SCRABBLE_POINTS[char];
 	else if (char === "ß" || char === "ẞ") score += 2 * SCRABBLE_POINTS.S;
-	else if (ALPHABET.includes(char)) score += SCRABBLE_POINTS[char] || 0;
 	return score;
 }
 function AlphabetArcsRoute() {
 	const appRef = useRef(null);
 	useEffect(() => {
-		const appEl = appRef.current;
-		if (!appEl) return;
-		window.d3 = d3;
-		const input = appEl.querySelector("#nameInput");
-		const themeToggle = appEl.querySelector("#themeToggle");
-		const visualizationToggle = appEl.querySelector("#visualizationToggle");
-		const btnSVG = appEl.querySelector("#downloadSVG");
-		const btnPNG = appEl.querySelector("#downloadPNG");
-		const btnJPG = appEl.querySelector("#downloadJPG");
+		const app = appRef.current;
+		if (!app) return void 0;
+		const ids = [
+			"nameInput",
+			"themeToggle",
+			"visualizationToggle",
+			"downloadSVG",
+			"downloadPNG",
+			"downloadJPG",
+			"visualization",
+			"sumValue",
+			"sumDetail",
+			"rootValue",
+			"rootDetail",
+			"scrabbleValue",
+			"scrabbleDetail",
+			"primeValue",
+			"factorDetail",
+			"letterDetails",
+			"numberOrb",
+			"meaningTitle",
+			"meaningText",
+			"numberSteps"
+		];
+		const elements = Object.fromEntries(ids.map((id) => [id, app.querySelector(`#${id}`)]));
+		const missing = ids.filter((id) => !elements[id]);
+		if (missing.length) {
+			console.error(`[AlphabetArcs] Initialisierung abgebrochen. Fehlende Elemente: ${missing.join(", ")}`);
+			return;
+		}
+		const { nameInput: input, themeToggle, visualizationToggle, downloadSVG: btnSVG, downloadPNG: btnPNG, downloadJPG: btnJPG, visualization, sumValue, sumDetail, rootValue, rootDetail, scrabbleValue, scrabbleDetail, primeValue, factorDetail, letterDetails, numberOrb, meaningTitle, meaningText, numberSteps } = elements;
 		let visualizationMode = "linear";
 		let visualizationRun = 0;
-		let isDisposed = false;
+		let disposed = false;
+		function getThemeColors() {
+			const css = getComputedStyle(app);
+			return {
+				accent: css.getPropertyValue("--accent").trim() || "#7863e9",
+				muted: css.getPropertyValue("--muted").trim() || "#827c98",
+				line: css.getPropertyValue("--line").trim() || "#ded8eb",
+				textColor: css.getPropertyValue("--text").trim() || "#29243b"
+			};
+		}
 		async function animatePath(path, runId) {
-			if (isDisposed || runId !== visualizationRun) return;
+			if (disposed || runId !== visualizationRun) return;
 			const node = path.node();
-			if (!node) return;
+			if (!node || typeof node.getTotalLength !== "function") return;
 			const length = node.getTotalLength();
 			path.attr("stroke-dasharray", `${length} ${length}`).attr("stroke-dashoffset", length);
 			try {
@@ -1085,38 +1116,38 @@ function AlphabetArcsRoute() {
 			} catch {
 				return;
 			}
-			if (!isDisposed && runId === visualizationRun) path.attr("stroke-dasharray", null).attr("stroke-dashoffset", null);
+			if (!disposed && runId === visualizationRun) path.attr("stroke-dasharray", null).attr("stroke-dashoffset", null);
 		}
-		function renderLinearVisualization({ container, letters, runId, accent, muted, line, textColor }) {
-			const width = Math.max(container.clientWidth || 700, 320);
+		function renderLinearVisualization(letters, runId, colors) {
+			const width = Math.max(visualization.clientWidth || 700, 320);
 			const height = 220;
 			const left = 12;
 			const right = width - 12;
 			const baseline = 150;
 			const labelFontSize = Math.max(10, Math.min(19, width / 55));
 			const nameFontSize = Math.max(13, Math.min(18, width / 60));
-			const svg = d3.select(container).append("svg").attr("viewBox", `0 0 ${width} ${height}`).attr("width", "100%").attr("role", "img").attr("aria-label", "Alphabetlinie mit nacheinander animierten Verbindungen der Buchstaben");
+			const svg = d3.select(visualization).append("svg").attr("viewBox", `0 0 ${width} ${height}`).attr("width", "100%").attr("role", "img").attr("aria-label", "Alphabetlinie mit nacheinander animierten Verbindungen der Buchstaben");
 			const x = d3.scalePoint().domain([...ALPHABET]).range([left, right]);
-			svg.append("line").attr("x1", left).attr("x2", right).attr("y1", baseline).attr("y2", baseline).attr("stroke", line).attr("stroke-width", 1.5);
 			const usedLetters = new Set(letters);
-			svg.selectAll(".letter-dot").data([...ALPHABET]).join("circle").attr("class", "letter-dot").attr("cx", (letter) => x(letter)).attr("cy", baseline).attr("r", (letter) => usedLetters.has(letter) ? 4 : 2).attr("fill", (letter) => usedLetters.has(letter) ? accent : line);
-			svg.selectAll(".letter-label").data([...ALPHABET]).join("text").attr("class", "letter-label").attr("x", (letter) => x(letter)).attr("y", 178).attr("text-anchor", "middle").attr("font-size", labelFontSize).attr("font-weight", (letter) => usedLetters.has(letter) ? 750 : 400).attr("fill", (letter) => usedLetters.has(letter) ? accent : muted).text((letter) => letter);
-			svg.append("text").attr("x", width / 2).attr("y", 24).attr("text-anchor", "middle").attr("font-size", nameFontSize).attr("font-weight", 700).attr("fill", textColor).text(letters || "Gib einen Namen ein");
+			svg.append("line").attr("x1", left).attr("x2", right).attr("y1", baseline).attr("y2", baseline).attr("stroke", colors.line).attr("stroke-width", 1.5);
+			svg.selectAll(".letter-dot").data([...ALPHABET]).join("circle").attr("class", "letter-dot").attr("cx", (letter) => x(letter)).attr("cy", baseline).attr("r", (letter) => usedLetters.has(letter) ? 4 : 2).attr("fill", (letter) => usedLetters.has(letter) ? colors.accent : colors.line);
+			svg.selectAll(".letter-label").data([...ALPHABET]).join("text").attr("class", "letter-label").attr("x", (letter) => x(letter)).attr("y", 178).attr("text-anchor", "middle").attr("font-size", labelFontSize).attr("font-weight", (letter) => usedLetters.has(letter) ? 750 : 400).attr("fill", (letter) => usedLetters.has(letter) ? colors.accent : colors.muted).text((letter) => letter);
+			svg.append("text").attr("x", width / 2).attr("y", 24).attr("text-anchor", "middle").attr("font-size", nameFontSize).attr("font-weight", 700).attr("fill", colors.textColor).text(letters || "Gib einen Namen ein");
 			const paths = svg.append("g");
 			(async () => {
 				for (let i = 1; i < letters.length; i++) {
-					if (isDisposed || runId !== visualizationRun) return;
+					if (disposed || runId !== visualizationRun) return;
 					const x1 = x(letters[i - 1]);
 					const x2 = x(letters[i]);
-					const arcHeight = Math.min(35 + i * (height / letters.length), height);
+					const arcHeight = Math.min(35 + i * height / letters.length, height);
 					const middleX = (x1 + x2) / 2;
 					const controlY = baseline - arcHeight;
 					const pathData = x1 === x2 ? `M ${x1} ${baseline} C ${x1 - 22} ${baseline - arcHeight}, ${x1 + 22} ${baseline - arcHeight}, ${x1} ${baseline}` : `M ${x1} ${baseline} Q ${middleX} ${controlY} ${x2} ${baseline}`;
-					await animatePath(paths.append("path").attr("d", pathData).attr("fill", "none").attr("stroke", accent).attr("stroke-width", 3).attr("stroke-linecap", "round").attr("opacity", .9), runId);
+					await animatePath(paths.append("path").attr("d", pathData).attr("fill", "none").attr("stroke", colors.accent).attr("stroke-width", 3).attr("stroke-linecap", "round").attr("opacity", .9), runId);
 				}
 			})();
 		}
-		function renderCircularVisualization({ container, letters, runId, accent, muted, line, textColor }) {
+		function renderCircularVisualization(letters, runId, colors) {
 			const width = 300;
 			const height = width;
 			const cx = width / 2;
@@ -1133,71 +1164,56 @@ function AlphabetArcsRoute() {
 					labelY: cy + Math.sin(angle) * labelRadius
 				});
 			});
-			const svg = d3.select(container).append("svg").attr("viewBox", `0 0 ${width} ${height}`).attr("width", "100%").attr("role", "img").attr("aria-label", "Kreisförmiges Alphabetdiagramm mit nacheinander animierten Verbindungen der Buchstaben");
-			svg.append("circle").attr("cx", cx).attr("cy", cy).attr("r", radius).attr("fill", "none").attr("stroke", line).attr("stroke-width", 1.5);
-			svg.append("text").attr("x", cx).attr("y", 142).attr("text-anchor", "middle").attr("font-size", 18).attr("font-weight", 700).attr("fill", textColor).text(letters || "Dein Name");
-			svg.append("text").attr("x", cx).attr("y", 167).attr("text-anchor", "middle").attr("font-size", 12).attr("fill", muted).text(letters ? `${Math.max(0, letters.length - 1)} Verbindungen` : "Gib einen Namen ein");
+			const svg = d3.select(visualization).append("svg").attr("viewBox", `0 0 ${width} ${height}`).attr("width", "100%").attr("role", "img").attr("aria-label", "Kreisförmiges Alphabetdiagramm mit nacheinander animierten Verbindungen der Buchstaben");
+			svg.append("circle").attr("cx", cx).attr("cy", cy).attr("r", radius).attr("fill", "none").attr("stroke", colors.line).attr("stroke-width", 1.5);
+			svg.append("text").attr("x", cx).attr("y", 142).attr("text-anchor", "middle").attr("font-size", 18).attr("font-weight", 700).attr("fill", colors.textColor).text(letters || "Dein Name");
+			svg.append("text").attr("x", cx).attr("y", 167).attr("text-anchor", "middle").attr("font-size", 12).attr("fill", colors.muted).text(letters ? `${Math.max(0, letters.length - 1)} Verbindungen` : "Gib einen Namen ein");
 			const usedLetters = new Set(letters);
-			svg.selectAll(".circle-letter-dot").data([...ALPHABET]).join("circle").attr("class", "circle-letter-dot").attr("cx", (letter) => pointByLetter.get(letter).x).attr("cy", (letter) => pointByLetter.get(letter).y).attr("r", (letter) => usedLetters.has(letter) ? 4.5 : 2.5).attr("fill", (letter) => usedLetters.has(letter) ? accent : line);
-			svg.selectAll(".circle-letter-label").data([...ALPHABET]).join("text").attr("class", "circle-letter-label").attr("x", (letter) => pointByLetter.get(letter).labelX).attr("y", (letter) => pointByLetter.get(letter).labelY).attr("text-anchor", "middle").attr("dominant-baseline", "central").attr("font-size", 15).attr("font-weight", (letter) => usedLetters.has(letter) ? 750 : 400).attr("fill", (letter) => usedLetters.has(letter) ? accent : muted).text((letter) => letter);
+			svg.selectAll(".circle-letter-dot").data([...ALPHABET]).join("circle").attr("class", "circle-letter-dot").attr("cx", (letter) => pointByLetter.get(letter).x).attr("cy", (letter) => pointByLetter.get(letter).y).attr("r", (letter) => usedLetters.has(letter) ? 4.5 : 2.5).attr("fill", (letter) => usedLetters.has(letter) ? colors.accent : colors.line);
+			svg.selectAll(".circle-letter-label").data([...ALPHABET]).join("text").attr("class", "circle-letter-label").attr("x", (letter) => pointByLetter.get(letter).labelX).attr("y", (letter) => pointByLetter.get(letter).labelY).attr("text-anchor", "middle").attr("dominant-baseline", "central").attr("font-size", 15).attr("font-weight", (letter) => usedLetters.has(letter) ? 750 : 400).attr("fill", (letter) => usedLetters.has(letter) ? colors.accent : colors.muted).text((letter) => letter);
 			const chords = svg.append("g").attr("class", "sequence-chords");
 			(async () => {
 				for (let i = 1; i < letters.length; i++) {
-					if (isDisposed || runId !== visualizationRun) return;
+					if (disposed || runId !== visualizationRun) return;
 					const previous = pointByLetter.get(letters[i - 1]);
 					const current = pointByLetter.get(letters[i]);
-					const pathData = `M ${previous.x} ${previous.y} Q ${cx} ${cy} ${current.x} ${current.y}`;
-					await animatePath(chords.append("path").attr("d", pathData).attr("fill", "none").attr("stroke", accent).attr("stroke-width", 2.8).attr("stroke-linecap", "round").attr("opacity", .82), runId);
+					await animatePath(chords.append("path").attr("d", `M ${previous.x} ${previous.y} Q ${cx} ${cy} ${current.x} ${current.y}`).attr("fill", "none").attr("stroke", colors.accent).attr("stroke-width", 2.8).attr("stroke-linecap", "round").attr("opacity", .82), runId);
 				}
 			})();
 		}
 		function renderVisualization(letters) {
-			const container = appEl.querySelector("#visualization");
-			if (!container) return;
-			container.classList.toggle("circular-mode", visualizationMode === "circle");
 			const runId = ++visualizationRun;
-			container.replaceChildren();
-			const css = getComputedStyle(appEl);
-			const params = {
-				container,
-				letters,
-				runId,
-				accent: css.getPropertyValue("--accent").trim() || "#7863e9",
-				muted: css.getPropertyValue("--muted").trim() || "#827c98",
-				line: css.getPropertyValue("--line").trim() || "#ded8eb",
-				textColor: css.getPropertyValue("--text").trim() || "#29243b"
-			};
-			if (visualizationMode === "circle") renderCircularVisualization(params);
-			else renderLinearVisualization(params);
-			if (visualizationToggle) {
-				visualizationToggle.textContent = visualizationMode === "linear" ? "Kreisdiagramm anzeigen" : "Alphabetlinie anzeigen";
-				visualizationToggle.setAttribute("aria-pressed", String(visualizationMode === "circle"));
-			}
+			visualization.replaceChildren();
+			visualization.classList.toggle("circular-mode", visualizationMode === "circle");
+			const colors = getThemeColors();
+			if (visualizationMode === "circle") renderCircularVisualization(letters, runId, colors);
+			else renderLinearVisualization(letters, runId, colors);
+			visualizationToggle.textContent = visualizationMode === "linear" ? "Kreisdiagramm anzeigen" : "Alphabetlinie anzeigen";
+			visualizationToggle.setAttribute("aria-pressed", String(visualizationMode === "circle"));
 		}
 		function updateNumerology(sum, root) {
 			const meaning = MEANINGS[root.value];
-			appEl.querySelector("#numberOrb").textContent = root.value;
-			appEl.querySelector("#meaningTitle").textContent = meaning.title;
-			appEl.querySelector("#meaningText").textContent = meaning.text;
-			const steps = appEl.querySelector("#numberSteps");
-			steps.replaceChildren();
+			numberOrb.textContent = root.value;
+			meaningTitle.textContent = meaning.title;
+			meaningText.textContent = meaning.text;
+			numberSteps.replaceChildren();
 			root.steps.forEach((number, index) => {
 				if (index > 0) {
 					const arrow = document.createElement("span");
 					arrow.className = "arrow";
 					arrow.textContent = "→";
-					steps.appendChild(arrow);
+					numberSteps.appendChild(arrow);
 				}
 				const chip = document.createElement("span");
 				chip.className = "step";
 				chip.textContent = number;
-				steps.appendChild(chip);
+				numberSteps.appendChild(chip);
 			});
 			if (root.steps.length === 1 && sum === 0) {
 				const note = document.createElement("span");
 				note.className = "step";
 				note.textContent = "Keine Buchstabenwerte";
-				steps.appendChild(note);
+				numberSteps.appendChild(note);
 			}
 		}
 		function update() {
@@ -1208,31 +1224,31 @@ function AlphabetArcsRoute() {
 			const root = getDigitalRoot(sum);
 			const factors = getPrimeFactors(sum);
 			const distinctFactors = [...new Set(factors)];
-			appEl.querySelector("#sumValue").textContent = sum;
-			appEl.querySelector("#sumDetail").textContent = values.length ? values.join(" + ") : "Noch keine Buchstaben";
-			appEl.querySelector("#rootValue").textContent = root.value;
-			appEl.querySelector("#rootDetail").textContent = root.steps.length > 1 ? root.steps.join(" → ") : "Keine weitere Reduktion nötig";
-			appEl.querySelector("#scrabbleValue").textContent = getScrabbleScore(rawName);
-			appEl.querySelector("#scrabbleDetail").textContent = "Summe im deutschen Scrabble";
-			appEl.querySelector("#primeValue").textContent = distinctFactors.length ? distinctFactors.join(", ") : "Keine";
-			appEl.querySelector("#factorDetail").textContent = sum < 2 ? "Für Werte unter 2 gibt es keine Primfaktorzerlegung." : `${sum} = ${factors.join(" × ")}`;
-			appEl.querySelector("#letterDetails").textContent = letters ? [...letters].map((letter) => `${letter} = ${letterValue(letter)}`).join(" · ") : "Gib einen Namen ein, um die Buchstabenwerte zu sehen.";
+			sumValue.textContent = sum;
+			sumDetail.textContent = values.length ? values.join(" + ") : "Noch keine Buchstaben";
+			rootValue.textContent = root.value;
+			rootDetail.textContent = root.steps.length > 1 ? root.steps.join(" → ") : "Keine weitere Reduktion nötig";
+			scrabbleValue.textContent = getScrabbleScore(rawName);
+			scrabbleDetail.textContent = "Summe im deutschen Scrabble";
+			primeValue.textContent = distinctFactors.length ? distinctFactors.join(", ") : "Keine";
+			factorDetail.textContent = sum < 2 ? "Für Werte unter 2 gibt es keine Primfaktorzerlegung." : `${sum} = ${factors.join(" × ")}`;
+			letterDetails.textContent = letters ? [...letters].map((letter) => `${letter} = ${letterValue(letter)}`).join(" · ") : "Gib einen Namen ein, um die Buchstabenwerte zu sehen.";
 			updateNumerology(sum, root);
 			renderVisualization(letters);
 		}
 		function applyTheme(dark) {
-			appEl.classList.toggle("dark", dark);
+			app.classList.toggle("dark", dark);
 			themeToggle.textContent = dark ? "☀️ Light Mode" : "🌙 Dark Mode";
 			try {
 				localStorage.setItem("alphabet-arcs-theme", dark ? "dark" : "light");
-			} catch {
-				console.error();
+			} catch (error) {
+				console.warn("[AlphabetArcs] Theme konnte nicht gespeichert werden:", error);
 			}
 			renderVisualization(getLetters(input.value));
 		}
 		function getDownloadFilename(extension) {
-			const safeName = input.value.trim();
-			return `${safeName ? "alphabet-arcs_" + safeName : "alphabet-arcs"}.${extension}`;
+			const safeName = input.value.trim().replace(/[^A-Z]/g, "").replace(/\s+/g, "_").slice(0, 60);
+			return `${safeName ? `alphabet-arcs_${safeName}` : "alphabet-arcs"}.${extension}`;
 		}
 		function downloadBlob(blob, filename) {
 			const url = URL.createObjectURL(blob);
@@ -1242,10 +1258,10 @@ function AlphabetArcsRoute() {
 			document.body.appendChild(link);
 			link.click();
 			link.remove();
-			setTimeout(() => URL.revokeObjectURL(url), 1e3);
+			window.setTimeout(() => URL.revokeObjectURL(url), 1e3);
 		}
 		function downloadSVG() {
-			const svg = appEl.querySelector("#visualization svg");
+			const svg = visualization.querySelector("svg");
 			if (!svg) return;
 			const clone = svg.cloneNode(true);
 			clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
@@ -1253,7 +1269,7 @@ function AlphabetArcsRoute() {
 			downloadBlob(new Blob([svgString], { type: "image/svg+xml;charset=utf-8" }), getDownloadFilename("svg"));
 		}
 		function downloadRaster(format) {
-			const svg = appEl.querySelector("#visualization svg");
+			const svg = visualization.querySelector("svg");
 			if (!svg) return;
 			const clone = svg.cloneNode(true);
 			clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
@@ -1270,12 +1286,17 @@ function AlphabetArcsRoute() {
 				const canvas = document.createElement("canvas");
 				canvas.width = width * scale;
 				canvas.height = height * scale;
-				const ctx = canvas.getContext("2d");
-				if (format === "jpg") {
-					ctx.fillStyle = "#ffffff";
-					ctx.fillRect(0, 0, canvas.width, canvas.height);
+				const context = canvas.getContext("2d");
+				if (!context) {
+					URL.revokeObjectURL(url);
+					console.error("[AlphabetArcs] Canvas-Kontext ist nicht verfügbar.");
+					return;
 				}
-				ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+				if (format === "jpg") {
+					context.fillStyle = "#ffffff";
+					context.fillRect(0, 0, canvas.width, canvas.height);
+				}
+				context.drawImage(image, 0, 0, canvas.width, canvas.height);
 				URL.revokeObjectURL(url);
 				canvas.toBlob((blob) => {
 					if (blob) downloadBlob(blob, getDownloadFilename(format));
@@ -1284,22 +1305,21 @@ function AlphabetArcsRoute() {
 			image.onerror = () => URL.revokeObjectURL(url);
 			image.src = url;
 		}
-		const handleThemeClick = () => applyTheme(!appEl.classList.contains("dark"));
+		const handleThemeClick = () => applyTheme(!app.classList.contains("dark"));
 		const handleVizToggle = () => {
 			visualizationMode = visualizationMode === "linear" ? "circle" : "linear";
-			const isCircular = visualizationMode === "circle";
-			appEl.querySelector("#visualization")?.classList.toggle("circular-mode", isCircular);
-			appEl.querySelector(".metrics")?.classList.toggle("metrics-hidden", isCircular);
-			appEl.querySelector(".letterdetails")?.classList.toggle("letterdetails-hidden", isCircular);
+			app.querySelector(".metrics")?.classList.toggle("metrics-hidden", visualizationMode === "circle");
+			app.querySelector(".letterdetails")?.classList.toggle("letterdetails-hidden", visualizationMode === "circle");
 			renderVisualization(getLetters(input.value));
 		};
 		const handleFocus = () => {
 			input.value = "";
+			update();
 		};
 		const handleDownloadPNG = () => downloadRaster("png");
 		const handleDownloadJPG = () => downloadRaster("jpg");
 		themeToggle.addEventListener("click", handleThemeClick);
-		visualizationToggle?.addEventListener("click", handleVizToggle);
+		visualizationToggle.addEventListener("click", handleVizToggle);
 		input.addEventListener("focus", handleFocus);
 		input.addEventListener("input", update);
 		btnSVG.addEventListener("click", downloadSVG);
@@ -1308,17 +1328,17 @@ function AlphabetArcsRoute() {
 		let savedTheme = "light";
 		try {
 			savedTheme = localStorage.getItem("alphabet-arcs-theme") || "light";
-		} catch {
-			console.error();
+		} catch (error) {
+			console.warn("[AlphabetArcs] Gespeichertes Theme konnte nicht gelesen werden:", error);
 		}
-		appEl.classList.toggle("dark", savedTheme === "dark");
+		app.classList.toggle("dark", savedTheme === "dark");
 		themeToggle.textContent = savedTheme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
 		update();
 		return () => {
-			isDisposed = true;
-			visualizationRun++;
+			disposed = true;
+			visualizationRun += 1;
 			themeToggle.removeEventListener("click", handleThemeClick);
-			visualizationToggle?.removeEventListener("click", handleVizToggle);
+			visualizationToggle.removeEventListener("click", handleVizToggle);
 			input.removeEventListener("focus", handleFocus);
 			input.removeEventListener("input", update);
 			btnSVG.removeEventListener("click", downloadSVG);
@@ -1362,6 +1382,7 @@ function AlphabetArcsRoute() {
 						children: [/* @__PURE__ */ jsx("button", {
 							id: "visualizationToggle",
 							type: "button",
+							"aria-pressed": "false",
 							children: "Kreisdiagramm anzeigen"
 						}), /* @__PURE__ */ jsxs("div", {
 							className: "download-buttons",
@@ -1462,6 +1483,16 @@ function AlphabetArcsRoute() {
 							]
 						})
 					]
+				}),
+				/* @__PURE__ */ jsxs("section", {
+					className: "card letterdetails",
+					children: [/* @__PURE__ */ jsx("div", {
+						className: "metric-label",
+						children: "Buchstabenwerte"
+					}), /* @__PURE__ */ jsx("div", {
+						id: "letterDetails",
+						children: "Gib einen Namen ein, um die Buchstabenwerte zu sehen."
+					})]
 				}),
 				/* @__PURE__ */ jsxs("section", {
 					className: "card numerology-card",
@@ -2595,7 +2626,7 @@ function GroundMotionDashboard({ preloadedRecords = [] }) {
 		let active = true;
 		async function boot() {
 			await import("./assets/config-B-OuAP0M.js");
-			await import("./assets/utils-Bdvv_c-y.js");
+			await import("./assets/utils-DOWKgkDr.js");
 			await import("./assets/scatterPlot-B-0vHmqa.js");
 			await import("./assets/histogram-CkjA8bCm.js");
 			await import("./assets/densityPlot-CqYQ6EXM.js");
@@ -3422,8 +3453,8 @@ var Wochenplan_default = UNSAFE_withComponentProps(function WochenplanerRoute() 
 // \0virtual:react-router/server-manifest
 var server_manifest_default = {
 	"entry": {
-		"module": "/assets/entry.client-DuKkztGt.js",
-		"imports": ["/assets/rolldown-runtime-XKyaHtl9.js", "/assets/pdf-vendor-ivIhnjD-.js"],
+		"module": "/assets/entry.client-D0aGo1_L.js",
+		"imports": ["/assets/rolldown-runtime-XKyaHtl9.js", "/assets/pdf-vendor-yVI8rCDK.js"],
 		"css": []
 	},
 	"routes": {
@@ -3440,11 +3471,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/root-kbNiwOGx.js",
+			"module": "/assets/root-BTuMkw06.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/pdf-vendor-ivIhnjD-.js",
-				"/assets/entry.client-DuKkztGt.js"
+				"/assets/pdf-vendor-yVI8rCDK.js",
+				"/assets/entry.client-D0aGo1_L.js"
 			],
 			"css": ["/assets/root-DjLeHIvO.css"],
 			"clientActionModule": void 0,
@@ -3465,11 +3496,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/AppLayout-BxOM7UQr.js",
+			"module": "/assets/AppLayout-DTjHaxec.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/entry.client-DuKkztGt.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/entry.client-D0aGo1_L.js",
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": [],
 			"clientActionModule": void 0,
@@ -3490,11 +3521,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/home-CKMaqcyG.js",
+			"module": "/assets/home-Dz4Wc39W.js",
 			"imports": [
-				"/assets/entry.client-DuKkztGt.js",
+				"/assets/entry.client-D0aGo1_L.js",
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": [],
 			"clientActionModule": void 0,
@@ -3515,11 +3546,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/LatentSpace-COzpoLx5.js",
+			"module": "/assets/LatentSpace-BbkucS3o.js",
 			"imports": [
-				"/assets/entry.client-DuKkztGt.js",
+				"/assets/entry.client-D0aGo1_L.js",
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": ["/assets/subsite--IzEVlk9.css"],
 			"clientActionModule": void 0,
@@ -3540,11 +3571,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/ConfoundingVariables-D_g17hAg.js",
+			"module": "/assets/ConfoundingVariables-BsC6fyUA.js",
 			"imports": [
-				"/assets/entry.client-DuKkztGt.js",
+				"/assets/entry.client-D0aGo1_L.js",
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": ["/assets/subsite--IzEVlk9.css"],
 			"clientActionModule": void 0,
@@ -3565,11 +3596,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/index-B56ovXiV.js",
+			"module": "/assets/index-BNR7R_Td.js",
 			"imports": [
-				"/assets/entry.client-DuKkztGt.js",
+				"/assets/entry.client-D0aGo1_L.js",
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": [],
 			"clientActionModule": void 0,
@@ -3590,11 +3621,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/AlphabetArcs-BIrX9PDK.js",
+			"module": "/assets/AlphabetArcs-Bm3cSm1z.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/entry.client-DuKkztGt.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/entry.client-D0aGo1_L.js",
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": ["/assets/AlphabetArcs-BlpgQV_i.css"],
 			"clientActionModule": void 0,
@@ -3615,12 +3646,12 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/EQDist-D3NlJgOD.js",
+			"module": "/assets/EQDist-CA7sNvoQ.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/entry.client-DuKkztGt.js",
+				"/assets/entry.client-D0aGo1_L.js",
 				"/assets/faultDistance-CoChND-_.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": [],
 			"clientActionModule": void 0,
@@ -3641,12 +3672,12 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/DistanceContours-D3ppUPx_.js",
+			"module": "/assets/DistanceContours-Ctcm61RB.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/entry.client-DuKkztGt.js",
+				"/assets/entry.client-D0aGo1_L.js",
 				"/assets/faultDistance-CoChND-_.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": [],
 			"clientActionModule": void 0,
@@ -3667,11 +3698,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/GroundMotion-B6aaQ543.js",
+			"module": "/assets/GroundMotion-savoJmzg.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/entry.client-DuKkztGt.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/entry.client-D0aGo1_L.js",
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": ["/assets/GroundMotion-BWKhKoTQ.css"],
 			"clientActionModule": void 0,
@@ -3692,11 +3723,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/WebGraphics-CB6g0-xO.js",
+			"module": "/assets/WebGraphics-CXcMAdeM.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/entry.client-DuKkztGt.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/entry.client-D0aGo1_L.js",
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": [],
 			"clientActionModule": void 0,
@@ -3717,11 +3748,11 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/Wochenplan-Dy6ust-L.js",
+			"module": "/assets/Wochenplan-CtvmMqMe.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
-				"/assets/entry.client-DuKkztGt.js",
-				"/assets/pdf-vendor-ivIhnjD-.js"
+				"/assets/entry.client-D0aGo1_L.js",
+				"/assets/pdf-vendor-yVI8rCDK.js"
 			],
 			"css": ["/assets/Wochenplan-E4IejQae.css"],
 			"clientActionModule": void 0,
@@ -3730,8 +3761,8 @@ var server_manifest_default = {
 			"hydrateFallbackModule": void 0
 		}
 	},
-	"url": "/assets/manifest-71d772ef.js",
-	"version": "71d772ef",
+	"url": "/assets/manifest-4b556d17.js",
+	"version": "4b556d17",
 	"sri": void 0
 };
 // \0virtual:react-router/server-build
