@@ -7,10 +7,11 @@ App.Dashboard = {
 	resizeObserver: null,
 	state: {
 		minMagnitude: 3,
+		minDistance: 0,
+		maxDistance: 500,
 		metric: "HypD (km)",
 		isLogX: true,
-		isLogY: true,
-		showTrendline: true
+		isLogY: true
 	},
 	render: function(data, fileName) {
 		this.updateAll(false);
@@ -27,17 +28,20 @@ App.Dashboard = {
 		var maxMag = App.Config.magnitude.max;
 		this.state = {
 			minMagnitude: minMag,
+			minDistance: 0,
+			maxDistance: 500,
 			metric: "HypD (km)",
 			isLogX: true,
-			isLogY: true,
-			showTrendline: true
+			isLogY: true
 		};
 		d3.select("#log-x-checkbox").property("checked", true);
 		d3.select("#log-y-checkbox").property("checked", true);
-		d3.select("#trendline-checkbox").property("checked", true);
 		d3.select("input[name='distance'][value='HypD (km)']").property("checked", true);
 		d3.select("#mag-slider").attr("min", minMag).attr("max", maxMag).property("value", minMag);
 		d3.select("#mag-value").text(minMag.toFixed(1));
+		d3.select("#dist-min-input").property("value", 0);
+		d3.select("#dist-max-input").property("value", 500);
+		d3.select("#dist-value").text("0 – 500 km");
 		App.ScatterPlot.init("#my_dataviz", this.validData);
 		App.Histogram.init("#mag_histogram", this.validData);
 		App.DensityPlot.init("#pga_density", this.validData);
@@ -72,16 +76,24 @@ App.Dashboard = {
 				self.updateAll(true);
 			}, 50);
 		});
+		var distTimer;
+		d3.selectAll("#dist-min-input, #dist-max-input").on("input.dashboard", function() {
+			var minVal = +d3.select("#dist-min-input").property("value");
+			var maxVal = +d3.select("#dist-max-input").property("value");
+			self.state.minDistance = minVal;
+			self.state.maxDistance = maxVal;
+			d3.select("#dist-value").text(minVal + " – " + maxVal + " km");
+			clearTimeout(distTimer);
+			distTimer = setTimeout(function() {
+				self.updateAll(true);
+			}, 50);
+		});
 		d3.select("#log-x-checkbox").on("change.dashboard", function() {
 			self.state.isLogX = this.checked;
 			self.updateAll(false);
 		});
 		d3.select("#log-y-checkbox").on("change.dashboard", function() {
 			self.state.isLogY = this.checked;
-			self.updateAll(false);
-		});
-		d3.select("#trendline-checkbox").on("change.dashboard", function() {
-			self.state.showTrendline = this.checked;
 			self.updateAll(false);
 		});
 		d3.selectAll("input[name='distance']").on("change.dashboard", function() {
@@ -95,7 +107,10 @@ App.Dashboard = {
 		var self = this;
 		var filteredData = this.validData.filter(function(d) {
 			var mag = App.Utils.parseNum(d["Earthquake Magnitude"]);
-			return !isNaN(mag) && mag >= self.state.minMagnitude;
+			var dist = App.Utils.parseNum(d[self.state.metric]);
+			var magOk = !isNaN(mag) && mag >= self.state.minMagnitude;
+			var distOk = !isNaN(dist) && dist >= self.state.minDistance && dist <= self.state.maxDistance;
+			return magOk && distOk;
 		});
 		var visibleData = App.ScatterPlot.update(filteredData, {
 			metric: this.state.metric,
@@ -107,12 +122,6 @@ App.Dashboard = {
 		var totalUniqueEq = App.Utils.countUniqueEarthquakes(this.validData);
 		d3.select("#point-count").text(visibleData.length.toLocaleString("de-DE") + " / " + this.validData.length.toLocaleString("de-DE"));
 		d3.select("#unique-eq-count").text(currentUniqueEq.toLocaleString("de-DE") + " / " + totalUniqueEq.toLocaleString("de-DE"));
-		App.ScatterPlot.update(filteredData, {
-			metric: this.state.metric,
-			isLogX: this.state.isLogX,
-			isLogY: this.state.isLogY,
-			showTrendline: this.state.showTrendline
-		});
 		if (magnitudeChanged) {
 			App.Histogram.update(this.state.minMagnitude);
 			App.DensityPlot.update(filteredData);

@@ -2609,7 +2609,7 @@ function GroundMotionDashboard({ preloadedRecords = [] }) {
 			await import("./assets/scatterPlot-B-0vHmqa.js");
 			await import("./assets/histogram-CkjA8bCm.js");
 			await import("./assets/densityPlot-CqYQ6EXM.js");
-			await import("./assets/dashboard-DOlw7i3U.js");
+			await import("./assets/dashboard-B_jYYe9_.js");
 			if (!active || !window.App) return;
 			if (preloadedRecords.length > 0) {
 				const rootEl = rootRef.current;
@@ -2677,82 +2677,32 @@ function GroundMotionDashboard({ preloadedRecords = [] }) {
 								/* @__PURE__ */ jsx("div", {
 									id: "file-status",
 									children: "Bereit"
-								})
-							]
-						}),
-						/* @__PURE__ */ jsxs("div", {
-							className: "control-group",
-							children: [
-								/* @__PURE__ */ jsx("div", {
-									className: "control-group-title",
-									children: "Verfügbare Datenquellen"
 								}),
-								/* @__PURE__ */ jsxs("label", {
-									className: "control-row",
-									children: [/* @__PURE__ */ jsx("input", {
-										id: "nga-west2-checkbox",
-										className: "data",
-										type: "checkbox",
-										defaultChecked: true
-									}), /* @__PURE__ */ jsx("span", { children: "NGA-West2" })]
-								}),
-								/* @__PURE__ */ jsxs("label", {
-									className: "control-row",
-									children: [/* @__PURE__ */ jsx("input", {
-										id: "esm-checkbox",
-										className: "data",
-										type: "checkbox"
-									}), /* @__PURE__ */ jsx("span", { children: "ESM" })]
-								})
-							]
-						}),
-						/* @__PURE__ */ jsx("div", {
-							className: "control-group",
-							children: /* @__PURE__ */ jsxs("label", {
-								className: "slider-label",
-								children: [/* @__PURE__ */ jsxs("span", { children: ["Min. Magnitude: ", /* @__PURE__ */ jsx("strong", {
-									id: "mag-value",
-									children: "3.0"
-								})] }), /* @__PURE__ */ jsx("input", {
-									id: "mag-slider",
-									type: "range",
-									min: "3",
-									max: "8",
-									step: "0.1",
-									defaultValue: "3"
-								})]
-							})
-						}),
-						/* @__PURE__ */ jsxs("div", {
-							className: "control-group",
-							children: [
-								/* @__PURE__ */ jsx("div", {
-									className: "control-group-title",
-									children: "Achsen & Regression"
-								}),
-								/* @__PURE__ */ jsxs("label", {
-									className: "control-row",
-									children: [/* @__PURE__ */ jsx("input", {
-										id: "log-x-checkbox",
-										type: "checkbox",
-										defaultChecked: true
-									}), /* @__PURE__ */ jsx("span", { children: "Log X-Achse (Distanz)" })]
-								}),
-								/* @__PURE__ */ jsxs("label", {
-									className: "control-row",
-									children: [/* @__PURE__ */ jsx("input", {
-										id: "log-y-checkbox",
-										type: "checkbox",
-										defaultChecked: true
-									}), /* @__PURE__ */ jsx("span", { children: "Log Y-Achse (PGA)" })]
-								}),
-								/* @__PURE__ */ jsxs("label", {
-									className: "control-row",
-									children: [/* @__PURE__ */ jsx("input", {
-										id: "trendline-checkbox",
-										type: "checkbox",
-										defaultChecked: true
-									}), /* @__PURE__ */ jsx("span", { children: "Trendlinie anzeigen" })]
+								/* @__PURE__ */ jsxs("div", {
+									className: "control-group",
+									children: [
+										/* @__PURE__ */ jsx("div", {
+											className: "control-group-title",
+											children: "Verfügbare Datenquellen"
+										}),
+										/* @__PURE__ */ jsxs("label", {
+											className: "control-row",
+											children: [/* @__PURE__ */ jsx("input", {
+												id: "nga-west2-checkbox",
+												className: "data",
+												type: "checkbox",
+												defaultChecked: true
+											}), /* @__PURE__ */ jsx("span", { children: "NGA-West2" })]
+										}),
+										/* @__PURE__ */ jsxs("label", {
+											className: "control-row",
+											children: [/* @__PURE__ */ jsx("input", {
+												id: "esm-checkbox",
+												className: "data",
+												type: "checkbox"
+											}), /* @__PURE__ */ jsx("span", { children: "ESM" })]
+										})
+									]
 								})
 							]
 						}),
@@ -2778,6 +2728,110 @@ function GroundMotionDashboard({ preloadedRecords = [] }) {
 									defaultChecked: val === "HypD (km)"
 								}), /* @__PURE__ */ jsx("span", { children: label })]
 							}, val))]
+						}),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("div", {
+							className: "control-group",
+							children: /* @__PURE__ */ jsxs("label", {
+								className: "slider-label",
+								children: [/* @__PURE__ */ jsxs("span", { children: ["Min. Magnitude: ", /* @__PURE__ */ jsx("strong", {
+									id: "mag-value",
+									children: "3.0"
+								})] }), /* @__PURE__ */ jsx("input", {
+									id: "mag-slider",
+									type: "range",
+									min: "3",
+									max: "8",
+									step: "0.1",
+									defaultValue: "3"
+								})]
+							})
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "control-group",
+							children: [/* @__PURE__ */ jsx("div", {
+								className: "slider-label",
+								children: /* @__PURE__ */ jsxs("span", { children: ["Distanz: ", /* @__PURE__ */ jsx("strong", {
+									id: "dist-value",
+									children: "0 – 500 km"
+								})] })
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "dual-slider-box",
+								children: [
+									/* @__PURE__ */ jsx("div", { className: "dual-slider-track" }),
+									/* @__PURE__ */ jsx("div", {
+										id: "dual-slider-fill",
+										className: "dual-slider-fill"
+									}),
+									/* @__PURE__ */ jsx("input", {
+										id: "dist-min-input",
+										type: "range",
+										min: "0",
+										max: "500",
+										step: "5",
+										defaultValue: "0",
+										className: "dual-range",
+										onPointerDown: (e) => e.currentTarget.style.zIndex = 5,
+										onInput: (e) => {
+											const minEl = e.currentTarget;
+											const maxEl = document.getElementById("dist-max-input");
+											const fill = document.getElementById("dual-slider-fill");
+											if (Number(minEl.value) > Number(maxEl.value)) minEl.value = maxEl.value;
+											const p1 = minEl.value / 500 * 100;
+											const p2 = maxEl.value / 500 * 100;
+											fill.style.left = `${p1}%`;
+											fill.style.width = `${p2 - p1}%`;
+										}
+									}),
+									/* @__PURE__ */ jsx("input", {
+										id: "dist-max-input",
+										type: "range",
+										min: "0",
+										max: "500",
+										step: "5",
+										defaultValue: "500",
+										className: "dual-range",
+										onPointerDown: (e) => {
+											e.currentTarget.style.zIndex = 5;
+											const minEl = document.getElementById("dist-min-input");
+											if (minEl) minEl.style.zIndex = 3;
+										},
+										onInput: (e) => {
+											const maxEl = e.currentTarget;
+											const minEl = document.getElementById("dist-min-input");
+											const fill = document.getElementById("dual-slider-fill");
+											if (Number(maxEl.value) < Number(minEl.value)) maxEl.value = minEl.value;
+											const p1 = minEl.value / 500 * 100;
+											const p2 = maxEl.value / 500 * 100;
+											fill.style.left = `${p1}%`;
+											fill.style.width = `${p2 - p1}%`;
+										}
+									})
+								]
+							})]
+						})] }),
+						/* @__PURE__ */ jsxs("div", {
+							className: "control-group",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "control-group-title",
+									children: "Achsen"
+								}),
+								/* @__PURE__ */ jsxs("label", {
+									className: "control-row",
+									children: [/* @__PURE__ */ jsx("input", {
+										id: "log-x-checkbox",
+										type: "checkbox",
+										defaultChecked: true
+									}), /* @__PURE__ */ jsx("span", { children: "Log X-Achse (Distanz)" })]
+								}),
+								/* @__PURE__ */ jsxs("label", {
+									className: "control-row",
+									children: [/* @__PURE__ */ jsx("input", {
+										id: "log-y-checkbox",
+										type: "checkbox",
+										defaultChecked: true
+									}), /* @__PURE__ */ jsx("span", { children: "Log Y-Achse (PGA)" })]
+								})
+							]
 						})
 					]
 				}),
@@ -3623,13 +3677,13 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/GroundMotion-Ben8YHzK.js",
+			"module": "/assets/GroundMotion-B6aaQ543.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
 				"/assets/entry.client-DuKkztGt.js",
 				"/assets/pdf-vendor-ivIhnjD-.js"
 			],
-			"css": ["/assets/GroundMotion-DVv347hg.css"],
+			"css": ["/assets/GroundMotion-BWKhKoTQ.css"],
 			"clientActionModule": void 0,
 			"clientLoaderModule": void 0,
 			"clientMiddlewareModule": void 0,
@@ -3686,8 +3740,8 @@ var server_manifest_default = {
 			"hydrateFallbackModule": void 0
 		}
 	},
-	"url": "/assets/manifest-218eff05.js",
-	"version": "218eff05",
+	"url": "/assets/manifest-d9a3278d.js",
+	"version": "d9a3278d",
 	"sri": void 0
 };
 // \0virtual:react-router/server-build
