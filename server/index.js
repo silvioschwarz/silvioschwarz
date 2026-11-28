@@ -1499,16 +1499,6 @@ function AlphabetArcsRoute() {
 							children: "Hinweis: Numerologie ist ein kulturelles Deutungssystem und wissenschaftlich nicht als Methode zur Persönlichkeitsbestimmung belegt. Die Namenszahl ist keine astrologische oder aus dem Geburtsdatum berechnete Lebenszahl."
 						})
 					]
-				}),
-				/* @__PURE__ */ jsxs("section", {
-					className: "card letterdetails",
-					children: [/* @__PURE__ */ jsx("h2", {
-						className: "section-heading",
-						children: "Buchstaben im Detail"
-					}), /* @__PURE__ */ jsx("div", {
-						className: "letter-details",
-						id: "letterDetails"
-					})]
 				})
 			]
 		})
@@ -3600,13 +3590,13 @@ var server_manifest_default = {
 			"hasClientMiddleware": false,
 			"hasDefaultExport": true,
 			"hasErrorBoundary": false,
-			"module": "/assets/AlphabetArcs-CzZGoXLR.js",
+			"module": "/assets/AlphabetArcs-BIrX9PDK.js",
 			"imports": [
 				"/assets/rolldown-runtime-XKyaHtl9.js",
 				"/assets/entry.client-DuKkztGt.js",
 				"/assets/pdf-vendor-ivIhnjD-.js"
 			],
-			"css": ["/assets/AlphabetArcs-sXpp5Y48.css"],
+			"css": ["/assets/AlphabetArcs-BlpgQV_i.css"],
 			"clientActionModule": void 0,
 			"clientLoaderModule": void 0,
 			"clientMiddlewareModule": void 0,
@@ -3740,8 +3730,8 @@ var server_manifest_default = {
 			"hydrateFallbackModule": void 0
 		}
 	},
-	"url": "/assets/manifest-d9a3278d.js",
-	"version": "d9a3278d",
+	"url": "/assets/manifest-71d772ef.js",
+	"version": "71d772ef",
 	"sri": void 0
 };
 // \0virtual:react-router/server-build
